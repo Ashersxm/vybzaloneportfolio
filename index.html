@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vybz Alone — Photographe & Vidéographe Premium | Sud de la France, Montpellier, Lyon, Paris</title>
+<meta name="description" content="Vybz Alone — photographe et vidéographe premium pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres.">
+<meta name="keywords" content="photographe Montpellier, vidéographe Lyon, photographe immobilier sud de la France, videographer Saint Martin, photographer Sint Maarten, photographe Toulouse, photographe Bordeaux, photographe Paris, real estate photographer south of France, luxury real estate videographer, photographer London">
+<meta name="author" content="Vybz Alone">
+<meta name="robots" content="index, follow">
+<meta name="geo.region" content="FR-OCC">
+<meta name="geo.placename" content="Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, Sud de la France">
+<link rel="canonical" href="https://www.vybzalone.com/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vybz Alone">
+<meta property="og:title" content="Vybz Alone — Photographe & Vidéographe Premium">
+<meta property="og:description" content="Photographie et vidéographie premium pour l'immobilier, l'hôtellerie, la beauté et les marques. Sud de la France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · Londres.">
+<meta property="og:image" content="https://www.vybzalone.com/og-cover.jpg">
+<meta property="og:url" content="https://www.vybzalone.com/">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_GB">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vybz Alone — Premium Photographer & Videographer">
+<meta name="twitter:description" content="Premium photography & videography for real estate, hospitality, beauty, and brands. South of France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · London.">
+<meta name="twitter:image" content="https://www.vybzalone.com/og-cover.jpg">
+
+<!-- Structured data: LocalBusiness / ProfessionalService with all target service areas -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Vybz Alone",
+  "description": "Photographie et vidéographie premium pour l'immobilier de luxe, l'hôtellerie, les événements, la beauté et les marques.",
+  "image": "https://www.vybzalone.com/og-cover.jpg",
+  "url": "https://www.vybzalone.com/",
+  "priceRange": "€€€",
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "Provence-Alpes-Côte d'Azur",
+    "addressCountry": "FR"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Montpellier" },
+    { "@type": "City", "name": "Lyon" },
+    { "@type": "City", "name": "Toulouse" },
+    { "@type": "City", "name": "Bordeaux" },
+    { "@type": "City", "name": "Paris" },
+    { "@type": "City", "name": "Marseille" },
+    { "@type": "Place", "name": "Sud de la France" },
+    { "@type": "Place", "name": "Saint-Martin" },
+    { "@type": "Place", "name": "Sint Maarten" },
+    { "@type": "City", "name": "London" }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/vybzalone"
+  ],
+  "makesOffer": [
+    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Real Estate Photography & Videography" } },
+    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event Photography & Videography" } },
+    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Beauty & Cosmetics Commercial Content" } },
+    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Drone / Aerial Cinematography" } },
+    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corporate Brand Films" } }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101216;
+    --ink-2:#17191E;
+    --ink-3:#1D2025;
+    --paper:#EFEAE2;
+    --paper-dim:#9A968C;
+    --paper-faint:#5F5C56;
+    --brass:#A6813F;
+    --brass-bright:#D2AC66;
+    --signal:#B04A3F;
+    --line: rgba(239,234,226,0.10);
+    --line-strong: rgba(239,234,226,0.20);
+    --glass: rgba(23,25,30,0.72);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    opacity:0;
+    animation: pageIn 1s var(--ease) forwards;
+  }
+  @keyframes pageIn{ to{ opacity:1; } }
+  ::selection{ background:var(--brass); color:var(--ink); }
+  a{color:inherit; text-decoration:none;}
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  img{ display:block; width:100%; height:100%; object-fit:cover; }
+
+  /* film grain texture, fixed over everything, very subtle */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:200; pointer-events:none;
+    opacity:0.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ambient glow orbs */
+  .glow{ position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+  .glow-brass{ background:radial-gradient(circle, rgba(210,172,102,0.22), transparent 70%); }
+  .glow-signal{ background:radial-gradient(circle, rgba(176,74,63,0.16), transparent 70%); }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--brass-bright);
+  }
+
+  /* ---------- reveal-on-scroll ---------- */
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
+  .reveal.in{ opacity:1; transform:none; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:24px 5vw;
+    transition: padding .4s var(--ease), background .4s var(--ease), border-color .4s var(--ease), backdrop-filter .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    padding:14px 5vw;
+    background:var(--glass);
+    backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:19px;
+    letter-spacing:0.02em;
+    position:relative; z-index:2;
+  }
+  .logo span{ color:var(--brass-bright); font-style:italic; font-weight:400; }
+  nav.links{ display:flex; gap:8px; align-items:center; position:relative; z-index:2; }
+  nav.links a{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--paper-dim);
+    transition:color .25s ease;
+    padding:10px 16px;
+    position:relative;
+  }
+  nav.links a::after{
+    content:""; position:absolute; left:16px; right:16px; bottom:6px; height:1px;
+    background:var(--brass-bright); transform:scaleX(0); transform-origin:left;
+    transition:transform .35s var(--ease);
+  }
+  nav.links a:hover, nav.links a:focus-visible{ color:var(--paper); outline:none; }
+  nav.links a:hover::after, nav.links a:focus-visible::after{ transform:scaleX(1); }
+  .lang-toggle{
+    background:transparent; border:1px solid var(--line-strong); color:var(--brass-bright);
+    font-size:11px; letter-spacing:0.1em; padding:8px 14px; border-radius:100px; cursor:pointer;
+    transition:all .25s ease; margin-left:8px;
+  }
+  .lang-toggle:hover, .lang-toggle:focus-visible{ border-color:var(--brass-bright); background:rgba(210,172,102,0.1); outline:none; }
+  .menu-btn{
+    display:none; background:none; border:1px solid var(--line-strong); color:var(--paper);
+    width:42px; height:42px; border-radius:100px; font-size:15px; cursor:pointer; z-index:101;
+    align-items:center; justify-content:center;
+  }
+
+  .mobile-panel{
+    position:fixed; inset:0; z-index:99; background:rgba(16,18,22,0.98); backdrop-filter:blur(20px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;
+    opacity:0; visibility:hidden; transition:opacity .4s var(--ease), visibility .4s;
+  }
+  .mobile-panel.open{ opacity:1; visibility:visible; }
+  .mobile-panel a{ font-family:'Fraunces', serif; font-size:32px; font-weight:500; }
+  .mobile-panel .lang-toggle{ margin-top:20px; }
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:16px 28px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:transform .35s var(--ease), background .3s ease, border-color .3s ease, box-shadow .3s ease;
+    display:inline-flex; align-items:center; gap:10px;
+    position:relative; overflow:hidden;
+  }
+  .btn-primary{ background:var(--brass-bright); color:var(--ink); border:1px solid var(--brass-bright); }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 30px -8px rgba(210,172,102,0.5); }
+  .btn-ghost{ background:transparent; color:var(--paper); border:1px solid var(--line-strong); }
+  .btn-ghost:hover{ transform:translateY(-2px); border-color:var(--paper-dim); background:rgba(255,255,255,0.03); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh;
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items:center;
+    gap:40px;
+    padding: 150px 5vw 60px;
+    position:relative;
+    isolation:isolate;
+  }
+  .hero .glow-brass{ width:640px; height:640px; top:-160px; left:-160px; }
+  .hero-copy{ position:relative; z-index:1; }
+  .hero-copy .eyebrow{ display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+  .rec-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--signal);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(176,74,63,0.55); }
+    70%{ box-shadow:0 0 0 8px rgba(176,74,63,0); }
+    100%{ box-shadow:0 0 0 0 rgba(176,74,63,0); }
+  }
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    line-height:0.94;
+    font-size: clamp(52px, 8vw, 118px);
+    letter-spacing:-0.015em;
+  }
+  .hero h1 em{ font-style:italic; font-weight:400; color:var(--brass-bright); display:block; }
+  .hero p.lede{
+    max-width:440px;
+    margin-top:28px;
+    color:var(--paper-dim);
+    font-size:17px;
+    line-height:1.65;
+  }
+  .hero-actions{ display:flex; gap:16px; margin-top:40px; align-items:center; flex-wrap:wrap; }
+
+  .scroll-cue{
+    position:absolute; bottom:36px; left:5vw; z-index:1;
+    display:flex; align-items:center; gap:10px;
+    color:var(--paper-faint); font-size:10.5px; letter-spacing:0.14em;
+  }
+  .scroll-cue .chev{ animation:bob 2s infinite var(--ease); }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+
+  .viewfinder{
+    position:relative; z-index:1;
+    aspect-ratio:4/5;
+    border-radius:6px;
+    overflow:hidden;
+    background:var(--ink-2);
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.6), 0 0 0 1px var(--line);
+  }
+  .viewfinder img{ filter:grayscale(1) contrast(1.05) brightness(0.85); transition:transform 1.2s var(--ease); }
+  .viewfinder:hover img{ transform:scale(1.04); }
+  .viewfinder::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(16,18,22,0.1), rgba(16,18,22,0.6) 88%);
+  }
+  .vf-corner{ position:absolute; width:22px; height:22px; border:1.5px solid var(--brass-bright); opacity:0.9; z-index:2; }
+  .vf-corner.tl{ top:16px; left:16px; border-right:none; border-bottom:none; }
+  .vf-corner.tr{ top:16px; right:16px; border-left:none; border-bottom:none; }
+  .vf-corner.bl{ bottom:16px; left:16px; border-right:none; border-top:none; }
+  .vf-corner.br{ bottom:16px; right:16px; border-left:none; border-top:none; }
+  .vf-tag{ position:absolute; z-index:2; font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em; color:var(--paper); }
+  .vf-tag.top-left{ top:18px; left:46px; display:flex; align-items:center; gap:6px; color:var(--signal); }
+  .vf-tag.bottom{ bottom:18px; left:18px; right:18px; display:flex; justify-content:space-between; color:var(--paper-dim); }
+  .vf-tag.bottom b{ color:var(--paper); font-weight:500; }
+
+  /* ---------- STATS STRIP ---------- */
+  .stats{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .stat{ padding:44px 28px; border-right:1px solid var(--line); }
+  .stat:last-child{ border-right:none; }
+  .stat .num{ font-family:'Fraunces', serif; font-weight:500; font-size:clamp(30px,4vw,46px); color:var(--brass-bright); }
+  .stat .lbl{ font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--paper-dim); margin-top:8px; }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:130px 5vw; position:relative; border-bottom:1px solid var(--line); isolation:isolate; }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:64px; flex-wrap:wrap; }
+  .section-head h2{ font-family:'Fraunces', serif; font-weight:500; font-size:clamp(32px,4.2vw,54px); max-width:640px; letter-spacing:-0.01em; }
+  .section-head p{ max-width:340px; color:var(--paper-dim); font-size:14.5px; line-height:1.6; }
+
+  /* ---------- CATEGORY GRID ---------- */
+  .sheet{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  .frame{
+    position:relative; aspect-ratio:1/1; background:var(--ink-2); overflow:hidden;
+    cursor:pointer; border:1px solid var(--line); padding:0; text-align:left; width:100%;
+    color:inherit; font-family:inherit; border-radius:8px;
+    transition:border-color .4s ease, transform .4s var(--ease);
+  }
+  .frame img{ filter:grayscale(1) contrast(1.08) brightness(0.65); transition:transform .8s var(--ease), filter .5s ease; }
+  .frame:hover, .frame:focus-visible{ border-color:var(--line-strong); transform:translateY(-4px); }
+  .frame:hover img, .frame:focus-visible img{ transform:scale(1.08); filter:grayscale(0.3) contrast(1.05) brightness(0.8); }
+  .frame::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(16,18,22,0.05), rgba(16,18,22,0.85) 85%); }
+  .frame::before{
+    content:""; position:absolute; inset:0; z-index:3; opacity:0; pointer-events:none;
+    background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(210,172,102,0.18), transparent 60%);
+    transition:opacity .3s ease;
+  }
+  .frame:hover::before{ opacity:1; }
+  .frame:focus-visible{ outline:2px solid var(--brass-bright); outline-offset:-2px; }
+  .frame .num{ position:absolute; top:18px; left:18px; z-index:2; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--brass-bright); }
+  .frame .label{ position:absolute; bottom:20px; left:20px; right:20px; z-index:2; }
+  .frame .label h3{ font-family:'Fraunces', serif; font-weight:500; font-size:23px; margin-bottom:6px; }
+  .frame .label span{ font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--paper-dim); letter-spacing:0.06em; }
+  .frame.active{ box-shadow: inset 0 0 0 2px var(--brass-bright); border-color:var(--brass-bright); }
+
+  /* ---------- GALLERY (horizontal scroll) ---------- */
+  .gallery-wrap{ display:none; margin-top:70px; }
+  .gallery-wrap.show{ display:block; }
+  .gallery-title{ display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+  .gallery-title .dot{ width:7px; height:7px; border-radius:50%; background:var(--signal); }
+  .gallery-title h3{ font-family:'Fraunces', serif; font-size:26px; font-weight:500; }
+  .gallery-title .count{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--paper-dim); }
+  .gallery-title .arrows{ display:flex; gap:8px; margin-left:auto; }
+  .arrow-btn{
+    width:38px; height:38px; border-radius:100px; border:1px solid var(--line-strong);
+    background:transparent; color:var(--paper); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .25s ease;
+  }
+  .arrow-btn:hover{ background:var(--brass-bright); color:var(--ink); border-color:var(--brass-bright); }
+  .filmstrip{
+    display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px;
+    scrollbar-width:none; align-items:flex-end;
+  }
+  .filmstrip::-webkit-scrollbar{ display:none; }
+  .cell{ position:relative; overflow:hidden; border-radius:6px; scroll-snap-align:start; background:var(--ink-2); flex-shrink:0; }
+  .cell.horizontal{ aspect-ratio:16/9; flex-basis:420px; height:280px; }
+  .cell.portrait{ aspect-ratio:9/16; flex-basis:200px; height:400px; }
+  .cell img, .cell video{ width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.08) brightness(0.82); }
+  .cell .tag{
+    position:absolute; bottom:12px; left:12px; right:12px; z-index:2;
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--paper-dim);
+    display:flex; justify-content:space-between; text-shadow:0 1px 3px rgba(0,0,0,0.7);
+  }
+  .cell .ratio-tag{
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:0.06em;
+    color:var(--paper); background:rgba(16,18,22,0.55); padding:4px 8px; border-radius:100px;
+    display:flex; align-items:center; gap:5px; backdrop-filter:blur(4px);
+  }
+  .cell .ratio-tag .rec-dot{ width:5px; height:5px; }
+  .cell::after{ content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(16,18,22,0) 55%, rgba(16,18,22,0.75) 100%); pointer-events:none; }
+
+  /* ---------- APPROACH ---------- */
+  .approach-list{ display:flex; flex-direction:column; }
+  .approach-row{
+    display:grid; grid-template-columns:80px 1fr 1.4fr; gap:32px; align-items:start;
+    padding:36px 0; border-top:1px solid var(--line);
+    transition:padding-left .4s var(--ease);
+  }
+  .approach-row:hover{ padding-left:12px; }
+  .approach-row:last-child{ border-bottom:1px solid var(--line); }
+  .approach-row .n{ font-family:'Fraunces', serif; font-size:15px; color:var(--brass-bright); }
+  .approach-row h4{ font-family:'Fraunces', serif; font-size:24px; font-weight:500; }
+  .approach-row p{ color:var(--paper-dim); font-size:14.5px; line-height:1.6; max-width:480px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:60px; align-items:start; }
+  .contact-grid h2{ font-family:'Fraunces', serif; font-weight:500; font-size:clamp(34px,4.6vw,54px); line-height:1.08; max-width:560px; letter-spacing:-0.01em; }
+  .contact-grid h2 em{ color:var(--brass-bright); font-style:italic; font-weight:400; }
+  .contact-copy{ margin-top:28px; color:var(--paper-dim); font-size:15px; line-height:1.6; max-width:440px; }
+  .contact-rows{ margin-top:40px; display:flex; flex-direction:column; gap:16px; }
+  .contact-row{ display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:14px; }
+  .contact-row .k{ font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--paper-dim); }
+  .contact-row .v{ font-size:14.5px; }
+  .contact-row a.v:hover{ color:var(--brass-bright); }
+
+  .form-card{
+    background:var(--glass); border:1px solid var(--line-strong); border-radius:14px;
+    padding:36px; backdrop-filter:blur(10px);
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.5);
+  }
+  .inquiry-form{ display:flex; flex-direction:column; gap:20px; }
+  .field{ position:relative; }
+  .field label{
+    position:absolute; left:16px; top:16px;
+    font-size:14px; color:var(--paper-dim); pointer-events:none;
+    transition:all .2s var(--ease); background:transparent;
+  }
+  .field input, .field select, .field textarea{
+    width:100%; background:rgba(255,255,255,0.02); border:1px solid var(--line-strong); color:var(--paper);
+    font-family:'Inter', sans-serif; font-size:14.5px; padding:16px; border-radius:8px; resize:vertical;
+    transition:border-color .25s ease, background .25s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--brass-bright); background:rgba(210,172,102,0.04);
+  }
+  .field input:focus ~ label, .field input:not(:placeholder-shown) ~ label,
+  .field textarea:focus ~ label, .field textarea:not(:placeholder-shown) ~ label{
+    top:-8px; left:12px; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase;
+    background:var(--ink-3); padding:0 6px; color:var(--brass-bright);
+  }
+  .field select{ color:var(--paper-dim); }
+  .field select ~ label{ top:-8px; left:12px; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; background:var(--ink-3); padding:0 6px; }
+  .form-note{ color:var(--paper-dim); font-size:10.5px; text-align:center; margin-top:4px; }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee-wrap{ overflow:hidden; padding:26px 0; border-bottom:1px solid var(--line); }
+  .marquee{ display:flex; gap:48px; white-space:nowrap; animation:scroll-left 26s linear infinite; }
+  .marquee span{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em; color:var(--paper-faint); }
+  .marquee span.sep{ color:var(--brass-bright); }
+  @keyframes scroll-left{ 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+
+  footer{ padding:36px 5vw; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; }
+  footer .mono{ font-size:11px; color:var(--paper-dim); letter-spacing:0.06em; }
+  .back-top{
+    width:44px; height:44px; border-radius:100px; border:1px solid var(--line-strong);
+    background:transparent; color:var(--paper); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .25s ease;
+  }
+  .back-top:hover{ background:var(--brass-bright); color:var(--ink); border-color:var(--brass-bright); transform:translateY(-3px); }
+
+  @media (max-width:860px){
+    nav.links{ display:none; }
+    .menu-btn{ display:flex; }
+    .hero{ grid-template-columns:1fr; padding-top:130px; }
+    .viewfinder{ order:-1; aspect-ratio:16/10; }
+    .sheet{ grid-template-columns:repeat(2,1fr); }
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .stat{ border-bottom:1px solid var(--line); }
+    .approach-row{ grid-template-columns:1fr; gap:10px; }
+    .contact-grid{ grid-template-columns:1fr; gap:44px; }
+    section{ padding:90px 6vw; }
+    .cell.horizontal{ flex-basis:280px; height:180px; }
+    .cell.portrait{ flex-basis:160px; height:280px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+    html{ scroll-behavior:auto; }
+    .reveal{ opacity:1; transform:none; }
+    body{ opacity:1; animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <a href="#top" class="logo">VYBZ<span> ALONE</span></a>
+  <nav class="links">
+    <a href="#work" data-i18n="nav.work">Travaux</a>
+    <a href="#approach" data-i18n="nav.approach">Approche</a>
+    <a href="#contact" data-i18n="nav.contact">Contact</a>
+    <button id="langToggle" class="lang-toggle mono" aria-label="Switch language">EN</button>
+  </nav>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+</header>
+
+<div class="mobile-panel" id="mobilePanel">
+  <a href="#work" data-i18n="nav.work">Travaux</a>
+  <a href="#approach" data-i18n="nav.approach">Approche</a>
+  <a href="#contact" data-i18n="nav.contact">Contact</a>
+  <button id="langToggleMobile" class="lang-toggle mono" aria-label="Switch language">EN</button>
+</div>
+
+<section class="hero" id="top" style="border-bottom:none;">
+  <div class="glow glow-brass"></div>
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="rec-dot"></span> <span data-i18n="hero.eyebrow">MARSEILLE · SUD DE LA FRANCE — DISPONIBLE POUR MISSION</span></div>
+    <h1 data-i18n-html="hero.title">Des histoires<br>visuelles,<br><em>tournées avec intention.</em></h1>
+    <p class="lede" data-i18n="hero.lede">Photographie et vidéographie pour l'immobilier, l'hôtellerie, la beauté et les marques qui ne veulent pas se battre sur le prix. Chaque image est pensée pour vendre ce qu'elle montre.</p>
+    <div class="hero-actions">
+      <a href="#work" class="btn btn-primary" data-i18n="hero.cta1">Voir le travail →</a>
+      <a href="#contact" class="btn btn-ghost" data-i18n="hero.cta2">Réserver un shoot</a>
+    </div>
+  </div>
+  <div class="viewfinder">
+    <div class="vf-corner tl"></div><div class="vf-corner tr"></div>
+    <div class="vf-corner bl"></div><div class="vf-corner br"></div>
+    <div class="vf-tag top-left"><span class="rec-dot" style="animation:none;"></span> REC</div>
+    <div class="vf-tag bottom"><span>f/2.8 · 35mm</span><b>ISO 200</b></div>
+    <img src="https://picsum.photos/seed/vybzhero/900/1100" alt="Featured shoot still">
+  </div>
+  <div class="scroll-cue mono"><span data-i18n="hero.scroll">DÉFILER</span> <span class="chev">↓</span></div>
+</section>
+
+<div class="stats reveal">
+  <div class="stat"><div class="num mono">6</div><div class="lbl" data-i18n="stats.1">SPÉCIALITÉS</div></div>
+  <div class="stat"><div class="num mono">48H</div><div class="lbl" data-i18n="stats.2">DÉLAI MOYEN</div></div>
+  <div class="stat"><div class="num mono">100%</div><div class="lbl" data-i18n="stats.3">TOURNÉ SUR PLACE</div></div>
+  <div class="stat"><div class="num mono">1</div><div class="lbl" data-i18n="stats.4">CONTACT UNIQUE</div></div>
+</div>
+
+<section id="work">
+  <div class="section-head reveal">
+    <h2 data-i18n="work.title">Six domaines. Une seule exigence.</h2>
+    <p data-i18n="work.subtitle">Sélectionnez une catégorie pour ouvrir la galerie. Travaux commerciaux, éditoriaux et aériens réalisés dans le sud de la France.</p>
+  </div>
+
+  <div class="sheet reveal" id="sheet"></div>
+
+  <div class="gallery-wrap" id="galleryWrap">
+    <div class="gallery-title">
+      <span class="dot"></span>
+      <h3 id="galleryName">—</h3>
+      <span class="count mono" id="galleryCount">00 / 00</span>
+      <div class="arrows">
+        <button class="arrow-btn" id="scrollLeft" aria-label="Previous">←</button>
+        <button class="arrow-btn" id="scrollRight" aria-label="Next">→</button>
+      </div>
+    </div>
+    <div class="filmstrip" id="filmstrip"></div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee mono" id="marquee"></div>
+</div>
+
+<section id="approach">
+  <div class="section-head reveal">
+    <h2 data-i18n="approach.title">Pourquoi les entreprises choisissent Vybz Alone.</h2>
+  </div>
+  <div class="approach-list">
+    <div class="approach-row reveal">
+      <span class="n mono">01</span>
+      <h4 data-i18n="approach.1.title">Fiabilité</h4>
+      <p data-i18n="approach.1.body">Les livrables arrivent le jour convenu, au format prêt pour la plateforme visée — sans relance.</p>
+    </div>
+    <div class="approach-row reveal">
+      <span class="n mono">02</span>
+      <h4 data-i18n="approach.2.title">La narration avant tout</h4>
+      <p data-i18n="approach.2.body">Chaque shoot est construit autour de ce que le bien, la marque ou l'événement doit communiquer — pas une liste de plans standards.</p>
+    </div>
+    <div class="approach-row reveal">
+      <span class="n mono">03</span>
+      <h4 data-i18n="approach.3.title">Capture complète</h4>
+      <p data-i18n="approach.3.body">Sol, caméra épaule, stabilisateur et drone avec un seul opérateur — un seul contact, une image cohérente.</p>
+    </div>
+    <div class="approach-row reveal">
+      <span class="n mono">04</span>
+      <h4 data-i18n="approach.4.title">Pensé pour la récurrence</h4>
+      <p data-i18n="approach.4.body">Forfaits par bien, abonnements mensuels et montages de récap conçus pour tourner sur un rythme régulier.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="border-bottom:none;">
+  <div class="contact-grid">
+    <div class="reveal">
+      <h2 data-i18n-html="contact.title">Un bien, un événement, une marque<br><em>à filmer comme il se doit ?</em></h2>
+      <p class="contact-copy" data-i18n="contact.copy">Décrivez votre projet — je réponds personnellement, sous 24 à 48h, avec une proposition claire.</p>
+      <div class="contact-rows">
+        <div class="contact-row"><span class="k" data-i18n="contact.email">Email</span><a class="v" href="mailto:hello@vybzalone.com">hello@vybzalone.com</a></div>
+        <div class="contact-row"><span class="k" data-i18n="contact.instagram">Instagram</span><a class="v" href="#" target="_blank" rel="noopener">@vybzalone</a></div>
+        <div class="contact-row"><span class="k" data-i18n="contact.based">Basé à</span><span class="v" data-i18n="contact.basedValue">Sud de la France — disponible en déplacement</span></div>
+        <div class="contact-row"><span class="k" data-i18n="contact.zones">Zones desservies</span><span class="v" data-i18n="contact.zonesValue" style="font-size:13px; line-height:1.6;">Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, Londres, Saint-Martin & Sint Maarten</span></div>
+      </div>
+    </div>
+
+    <div class="form-card reveal">
+      <form id="inquiryForm" class="inquiry-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <div class="field">
+          <input id="f-name" name="name" type="text" placeholder=" " required>
+          <label for="f-name" data-i18n="form.name">Nom</label>
+        </div>
+        <div class="field">
+          <input id="f-company" name="company" type="text" placeholder=" ">
+          <label for="f-company" data-i18n="form.company">Entreprise</label>
+        </div>
+        <div class="field">
+          <input id="f-email" name="email" type="email" placeholder=" " required>
+          <label for="f-email" data-i18n="form.email">Email</label>
+        </div>
+        <div class="field">
+          <select id="f-type" name="project_type">
+            <option data-i18n="cat.real-estate.label">Immobilier</option>
+            <option data-i18n="cat.events.label">Événements</option>
+            <option data-i18n="cat.beauty.label">Beauté & Cosmétique</option>
+            <option data-i18n="cat.model.label">Mannequin</option>
+            <option data-i18n="cat.drone.label">Drone</option>
+            <option data-i18n="cat.corporate.label">Corporate</option>
+            <option data-i18n="form.other">Autre</option>
+          </select>
+          <label for="f-type" data-i18n="form.type">Type de projet</label>
+        </div>
+        <div class="field">
+          <textarea id="f-message" name="message" rows="3" placeholder=" " required></textarea>
+          <label for="f-message" data-i18n="form.message">Que souhaitez-vous filmer ?</label>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" data-i18n="form.submit">Envoyer la demande →</button>
+        <p class="form-note mono" id="formNote" data-i18n="form.note">Réponse sous 24-48h.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="mono" data-i18n="footer.left">© 2026 VYBZ ALONE — TOUS LES TRAVAUX TOURNÉS SUR SITE</span>
+  <button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+  <span class="mono" data-i18n="footer.right">PHOTOGRAPHIE · VIDÉOGRAPHIE · DRONE</span>
+</footer>
+
+<script>
+  let lang = 'fr';
+
+  const categories = [
+    { id:'real-estate', seed:'estate',
+      label:{fr:'Immobilier', en:'Real Estate'},
+      tag:{fr:'BIEN · VISITE VIRTUELLE · DRONE', en:'PROPERTY · WALKTHROUGH · DRONE'} },
+    { id:'events', seed:'events',
+      label:{fr:'Événements', en:'Events'},
+      tag:{fr:'FILMS RÉCAP · COUVERTURE LIVE', en:'RECAP FILMS · LIVE COVERAGE'} },
+    { id:'beauty', seed:'beauty',
+      label:{fr:'Beauté & Cosmétique', en:'Beauty & Cosmetics'},
+      tag:{fr:'COMMERCIAL · PRODUIT', en:'COMMERCIAL · PRODUCT'} },
+    { id:'model', seed:'model',
+      label:{fr:'Mannequin', en:'Model'},
+      tag:{fr:'ÉDITORIAL · PORTRAIT', en:'EDITORIAL · PORTRAIT'} },
+    { id:'drone', seed:'drone',
+      label:{fr:'Drone', en:'Drone'},
+      tag:{fr:"AÉRIEN · PLANS D'ÉTABLISSEMENT", en:'AERIAL · ESTABLISHING SHOTS'} },
+    { id:'corporate', seed:'corporate',
+      label:{fr:'Corporate', en:'Corporate'},
+      tag:{fr:'FILM DE MARQUE · ÉQUIPE · BUREAU', en:'BRAND FILM · TEAM · OFFICE'} },
+  ];
+
+  const translations = {
+    fr: {
+      'nav.work':'Travaux', 'nav.approach':'Approche', 'nav.contact':'Contact',
+      'hero.eyebrow':'MARSEILLE · SUD DE LA FRANCE — DISPONIBLE POUR MISSION',
+      'hero.title':'Des histoires<br>visuelles,<br><em>tournées avec intention.</em>',
+      'hero.lede':"Photographie et vidéographie pour l'immobilier, l'hôtellerie, la beauté et les marques qui ne veulent pas se battre sur le prix. Chaque image est pensée pour vendre ce qu'elle montre.",
+      'hero.cta1':'Voir le travail →', 'hero.cta2':'Réserver un shoot', 'hero.scroll':'DÉFILER',
+      'stats.1':'SPÉCIALITÉS', 'stats.2':'DÉLAI MOYEN', 'stats.3':'TOURNÉ SUR PLACE', 'stats.4':'CONTACT UNIQUE',
+      'work.title':'Six domaines. Une seule exigence.',
+      'work.subtitle':'Sélectionnez une catégorie pour ouvrir la galerie. Travaux commerciaux, éditoriaux et aériens réalisés dans le sud de la France.',
+      'approach.title':'Pourquoi les entreprises choisissent Vybz Alone.',
+      'approach.1.title':'Fiabilité', 'approach.1.body':"Les livrables arrivent le jour convenu, au format prêt pour la plateforme visée — sans relance.",
+      'approach.2.title':'La narration avant tout', 'approach.2.body':"Chaque shoot est construit autour de ce que le bien, la marque ou l'événement doit communiquer — pas une liste de plans standards.",
+      'approach.3.title':'Capture complète', 'approach.3.body':'Sol, caméra épaule, stabilisateur et drone avec un seul opérateur — un seul contact, une image cohérente.',
+      'approach.4.title':'Pensé pour la récurrence', 'approach.4.body':'Forfaits par bien, abonnements mensuels et montages de récap conçus pour tourner sur un rythme régulier.',
+      'contact.title':'Un bien, un événement, une marque<br><em>à filmer comme il se doit ?</em>',
+      'contact.copy':'Décrivez votre projet — je réponds personnellement, sous 24 à 48h, avec une proposition claire.',
+      'form.name':'Nom', 'form.company':'Entreprise', 'form.email':'Email', 'form.type':'Type de projet',
+      'form.other':'Autre', 'form.message':'Que souhaitez-vous filmer ?', 'form.submit':'Envoyer la demande →',
+      'form.note':'Réponse sous 24-48h.',
+      'contact.email':'Email', 'contact.instagram':'Instagram', 'contact.based':'Basé à',
+      'contact.basedValue':'Sud de la France — disponible en déplacement',
+      'contact.zones':'Zones desservies',
+      'contact.zonesValue':'Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, Londres, Saint-Martin & Sint Maarten',
+      'footer.left':'© 2026 VYBZ ALONE — TOUS LES TRAVAUX TOURNÉS SUR SITE',
+      'footer.right':'PHOTOGRAPHIE · VIDÉOGRAPHIE · DRONE',
+    },
+    en: {
+      'nav.work':'Work', 'nav.approach':'Approach', 'nav.contact':'Contact',
+      'hero.eyebrow':'MARSEILLE · SOUTH OF FRANCE — AVAILABLE FOR COMMISSION',
+      'hero.title':'Visual<br>stories,<br><em>shot with intent.</em>',
+      'hero.lede':"Photography and videography for real estate, hospitality, beauty, and brands that don't compete on price. Every frame is built to sell the thing behind it.",
+      'hero.cta1':'View the work →', 'hero.cta2':'Book a shoot', 'hero.scroll':'SCROLL',
+      'stats.1':'SPECIALTIES', 'stats.2':'AVG. TURNAROUND', 'stats.3':'SHOT ON LOCATION', 'stats.4':'SINGLE CONTACT',
+      'work.title':'Six domains. One standard.',
+      'work.subtitle':'Select a category to open its reel. Portfolio spans commercial, editorial, and aerial work across the south of France.',
+      'approach.title':'Why businesses choose Vybz Alone over the alternative.',
+      'approach.1.title':'Reliability', 'approach.1.body':"Deliverables land on the day agreed, formatted for the platform they'll actually run on — no chasing.",
+      'approach.2.title':'Storytelling first', 'approach.2.body':'Every shoot is built around what the property, brand, or event needs to communicate — not a stock shot list.',
+      'approach.3.title':'Full stack capture', 'approach.3.body':'Ground, handheld, gimbal, and drone under one shooter — one point of contact, one consistent look.',
+      'approach.4.title':'Built for repeat work', 'approach.4.body':'Listing packages, monthly retainers, and recap edits designed to run on a schedule, not a one-off basis.',
+      'contact.title':'Have a property, event, or brand<br><em>worth shooting properly?</em>',
+      'contact.copy':"Describe your project — I reply personally, within 24-48h, with a clear proposal.",
+      'form.name':'Name', 'form.company':'Business / Company', 'form.email':'Email', 'form.type':'Project type',
+      'form.other':'Other', 'form.message':'What are you looking to shoot?', 'form.submit':'Send inquiry →',
+      'form.note':'Replies within 24-48h.',
+      'contact.email':'Email', 'contact.instagram':'Instagram', 'contact.based':'Based in',
+      'contact.basedValue':'South of France — available to travel',
+      'contact.zones':'Areas served',
+      'contact.zonesValue':'Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, London, Saint-Martin & Sint Maarten',
+      'footer.left':'© 2026 VYBZ ALONE — ALL WORK SHOT ON LOCATION',
+      'footer.right':'PHOTOGRAPHY · VIDEOGRAPHY · DRONE',
+    }
+  };
+  categories.forEach(c => {
+    translations.fr[`cat.${c.id}.label`] = c.label.fr;
+    translations.en[`cat.${c.id}.label`] = c.label.en;
+  });
+
+  function applyTranslations(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if(translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+    });
+    const toggleLabel = lang === 'fr' ? 'EN' : 'FR';
+    document.getElementById('langToggle').textContent = toggleLabel;
+    document.getElementById('langToggleMobile').textContent = toggleLabel;
+    document.title = lang === 'fr'
+      ? "Vybz Alone — Photographe & Vidéographe Premium | Sud de la France, Montpellier, Lyon, Paris"
+      : "Vybz Alone — Premium Photographer & Videographer | South of France, Saint-Martin, London";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if(metaDesc){
+      metaDesc.setAttribute('content', lang === 'fr'
+        ? "Vybz Alone — photographe et vidéographe premium pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres."
+        : "Vybz Alone — premium photographer and videographer for luxury real estate, hospitality, events, and brands. Based in the south of France, available in Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten, and London.");
+    }
+    renderMarquee();
+  }
+
+  const sheet = document.getElementById('sheet');
+  function renderSheet(){
+    sheet.innerHTML = '';
+    categories.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'frame';
+      btn.setAttribute('data-id', c.id);
+      btn.innerHTML = `
+        <span class="num mono">0${i+1}</span>
+        <img src="https://picsum.photos/seed/${c.seed}/700/700" alt="${c.label[lang]} sample">
+        <div class="label"><h3>${c.label[lang]}</h3><span>${c.tag[lang]}</span></div>
+      `;
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        btn.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+      btn.addEventListener('click', () => openGallery(c));
+      sheet.appendChild(btn);
+    });
+  }
+  renderSheet();
+
+  const marquee = document.getElementById('marquee');
+  function renderMarquee(){
+    const items = categories.map(c => c.label[lang]);
+    const loop = [...items, ...items, ...items, ...items];
+    marquee.innerHTML = loop.map(t => `<span>${t}</span><span class="sep">✦</span>`).join('');
+  }
+
+  const galleryWrap = document.getElementById('galleryWrap');
+  const filmstrip = document.getElementById('filmstrip');
+  const galleryName = document.getElementById('galleryName');
+  const galleryCount = document.getElementById('galleryCount');
+  let activeCategory = null;
+
+  const VIDEO_SAMPLE = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+  // Orientation + media-type plan per category.
+  // Real estate: always horizontal (matches walkthrough/drone footage).
+  // Everything else: mixed horizontal + portrait (matches reels vs brand film reality).
+  function mediaPlanFor(categoryId, index){
+    if(categoryId === 'real-estate'){
+      return { orientation:'horizontal', type: (index % 3 === 1) ? 'video' : 'photo' };
+    }
+    const pattern = ['portrait','horizontal','portrait','portrait','horizontal','portrait','horizontal','portrait'];
+    const orientation = pattern[index % pattern.length];
+    const type = (index % 4 === 1) ? 'video' : 'photo';
+    return { orientation, type };
+  }
+
+  function openGallery(c){
+    activeCategory = c;
+    document.querySelectorAll('.frame').forEach(f => f.classList.toggle('active', f.dataset.id === c.id));
+    galleryName.textContent = c.label[lang];
+    filmstrip.innerHTML = '';
+    const shots = 8;
+    galleryCount.textContent = `01 / ${String(shots).padStart(2,'0')}`;
+    for(let i=1;i<=shots;i++){
+      const plan = mediaPlanFor(c.id, i);
+      const cell = document.createElement('div');
+      cell.className = `cell ${plan.orientation}`;
+      const ratioLabel = plan.orientation === 'horizontal' ? '16:9' : '9:16';
+      const w = plan.orientation === 'horizontal' ? 800 : 500;
+      const h = plan.orientation === 'horizontal' ? 450 : 800;
+      const mediaEl = plan.type === 'video'
+        ? `<video src="${VIDEO_SAMPLE}" poster="https://picsum.photos/seed/${c.seed}${i}/${w}/${h}" muted loop playsinline autoplay></video>`
+        : `<img src="https://picsum.photos/seed/${c.seed}${i}/${w}/${h}" alt="${c.label[lang]} still ${i}">`;
+      cell.innerHTML = `
+        <div class="ratio-tag">${plan.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
+        ${mediaEl}
+        <div class="tag"><span>${plan.type === 'video' ? (lang==='fr'?'VIDÉO':'VIDEO') : (lang==='fr'?'PHOTO':'PHOTO')}</span><span>${c.label[lang].toUpperCase()}_0${i}</span></div>
+      `;
+      filmstrip.appendChild(cell);
+    }
+    galleryWrap.classList.add('show');
+    galleryWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  document.getElementById('scrollLeft').addEventListener('click', () => filmstrip.scrollBy({left:-280, behavior:'smooth'}));
+  document.getElementById('scrollRight').addEventListener('click', () => filmstrip.scrollBy({left:280, behavior:'smooth'}));
+
+  const statusMessages = {
+    fr: { sending:'Envoi…', sent:'Envoyé ✓', sentNote:"Envoyé — réponse sous 24-48h.", error:"Un problème est survenu — écrivez à hello@vybzalone.com.", notConnected:"Formulaire pas encore connecté — écrivez à hello@vybzalone.com." },
+    en: { sending:'Sending…', sent:'Sent ✓', sentNote:"Sent — you'll hear back within 24-48h.", error:'Something went wrong — email hello@vybzalone.com directly.', notConnected:"Form isn't connected yet — email hello@vybzalone.com directly." }
+  };
+  const inquiryForm = document.getElementById('inquiryForm');
+  const formNote = document.getElementById('formNote');
+  inquiryForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = inquiryForm.querySelector('button[type="submit"]');
+    const msg = statusMessages[lang];
+    submitBtn.disabled = true;
+    submitBtn.textContent = msg.sending;
+    try{
+      const res = await fetch(inquiryForm.action, { method:'POST', body:new FormData(inquiryForm), headers:{ 'Accept':'application/json' } });
+      if(res.ok){
+        inquiryForm.reset();
+        formNote.textContent = msg.sentNote;
+        submitBtn.textContent = msg.sent;
+      } else {
+        formNote.textContent = msg.error;
+        submitBtn.textContent = translations[lang]['form.submit'];
+      }
+    } catch(err){
+      formNote.textContent = msg.notConnected;
+      submitBtn.textContent = translations[lang]['form.submit'];
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  function toggleLang(){
+    lang = lang === 'fr' ? 'en' : 'fr';
+    applyTranslations();
+    renderSheet();
+    if (activeCategory) openGallery(activeCategory);
+  }
+  document.getElementById('langToggle').addEventListener('click', toggleLang);
+  document.getElementById('langToggleMobile').addEventListener('click', toggleLang);
+
+  // mobile menu
+  const menuBtn = document.getElementById('menuBtn');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuBtn.addEventListener('click', () => {
+    const open = mobilePanel.classList.toggle('open');
+    menuBtn.textContent = open ? '✕' : '☰';
+  });
+  mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobilePanel.classList.remove('open'); menuBtn.textContent = '☰';
+  }));
+
+  // sticky header state
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // back to top
+  document.getElementById('backTop').addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  // reveal-on-scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('in'); });
+  }, { threshold:0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // init
+  applyTranslations();
+  if (window.innerWidth > 860) openGallery(categories[0]);
+</script>
+
+</body>
+</html>
