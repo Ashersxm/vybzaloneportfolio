@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Vybz Alone — Content Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101216; --ink-2:#17191E; --paper:#EFEAE2; --paper-dim:#9A968C;
+    --brass:#D2AC66; --signal:#B04A3F; --line:rgba(239,234,226,0.14); --line-strong:rgba(239,234,226,0.24);
+    --ok:#5FA57A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; padding:40px 5vw 100px; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  h1{ font-size:26px; font-weight:600; margin-bottom:6px; }
+  .sub{ color:var(--paper-dim); font-size:13.5px; margin-bottom:36px; }
+  .card{ background:var(--ink-2); border:1px solid var(--line-strong); border-radius:10px; padding:26px; margin-bottom:24px; max-width:760px; }
+  .card h2{ font-size:15px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .badge{ font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:100px; background:rgba(210,172,102,0.15); color:var(--brass); }
+  label{ display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--paper-dim); margin-bottom:6px; margin-top:16px; }
+  label:first-of-type{ margin-top:0; }
+  input[type=text], input[type=password], select{
+    width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--line-strong); color:var(--paper);
+    padding:11px 13px; border-radius:6px; font-size:14px; font-family:'Inter',sans-serif;
+  }
+  input[type=file]{ width:100%; font-size:13px; color:var(--paper-dim); }
+  input:focus, select:focus{ outline:none; border-color:var(--brass); }
+  .row{ display:flex; gap:14px; }
+  .row > div{ flex:1; }
+  button{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:12px 20px; border-radius:6px; border:1px solid var(--brass); background:var(--brass); color:var(--ink);
+    cursor:pointer; margin-top:18px; transition:opacity .2s ease;
+  }
+  button.secondary{ background:transparent; color:var(--paper); border-color:var(--line-strong); }
+  button:hover{ opacity:0.88; }
+  button:disabled{ opacity:0.4; cursor:not-allowed; }
+  .hint{ color:var(--paper-dim); font-size:12px; line-height:1.6; margin-top:8px; }
+  .log{
+    font-family:'JetBrains Mono',monospace; font-size:12px; background:rgba(0,0,0,0.3); border:1px solid var(--line);
+    border-radius:6px; padding:14px; max-height:220px; overflow-y:auto; margin-top:16px; white-space:pre-wrap;
+    color:var(--paper-dim);
+  }
+  .log .ok{ color:var(--ok); }
+  .log .err{ color:var(--signal); }
+  .section-item{
+    display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid var(--line);
+  }
+  .section-item .meta{ font-size:13.5px; }
+  .section-item .meta span{ display:block; color:var(--paper-dim); font-size:11px; margin-top:3px; }
+  .section-item button{ margin-top:0; padding:8px 14px; font-size:10px; }
+  .setup-status{ font-size:12.5px; color:var(--ok); display:none; align-items:center; gap:8px; margin-top:10px; }
+  .setup-status.show{ display:flex; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok); }
+</style>
+</head>
+<body>
+
+<h1>Vybz Alone — Content Manager</h1>
+<p class="sub">Add sections and upload photos/videos to your categories. This page isn't linked from the site — keep the URL private.</p>
+
+<div class="card" id="setupCard">
+  <h2>1. Connect to your GitHub repo <span class="badge">ONE-TIME SETUP</span></h2>
+  <label>GitHub username</label>
+  <input type="text" id="ghOwner" placeholder="e.g. brandonhunt">
+  <label>Repository name</label>
+  <input type="text" id="ghRepo" placeholder="e.g. vybz-alone-site">
+  <label>Branch</label>
+  <input type="text" id="ghBranch" placeholder="main" value="main">
+  <label>Personal Access Token</label>
+  <input type="password" id="ghToken" placeholder="ghp_...">
+  <p class="hint">
+    Create one at github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens.
+    Scope it to <b>this repo only</b>, with <b>Contents: Read and write</b> permission. Nothing else needed.
+    The token is saved only in this browser's local storage — never uploaded anywhere except directly to GitHub's own API.
+  </p>
+  <button id="saveConfig">Save connection</button>
+  <button class="secondary" id="clearConfig">Clear saved connection</button>
+  <div class="setup-status" id="setupStatus"><span class="dot"></span> Connected</div>
+</div>
+
+<div class="card">
+  <h2>2. Choose a category</h2>
+  <select id="categorySelect">
+    <option value="real-estate">Real Estate / Immobilier</option>
+    <option value="events">Events / Événements</option>
+    <option value="beauty">Beauty & Cosmetics / Beauté</option>
+    <option value="model">Model / Mannequin</option>
+    <option value="drone">Drone</option>
+    <option value="corporate">Corporate</option>
+  </select>
+  <button id="loadSections">Load existing sections</button>
+  <div id="sectionsList"></div>
+</div>
+
+<div class="card">
+  <h2>3. Add a new section</h2>
+  <div class="row">
+    <div>
+      <label>Section name (FR)</label>
+      <input type="text" id="secNameFr" placeholder="ex : Villa Saint-Martin">
+    </div>
+    <div>
+      <label>Section name (EN) — optional</label>
+      <input type="text" id="secNameEn" placeholder="e.g. Saint-Martin Villa">
+    </div>
+  </div>
+  <label>Photos / videos for this section</label>
+  <input type="file" id="mediaFiles" multiple accept="image/*,video/*">
+  <p class="hint">
+    Orientation (horizontal/portrait) is detected automatically from each file's dimensions.
+    Real Estate is always displayed horizontal on the live site regardless of the source file, to stay consistent with walkthrough footage.
+  </p>
+  <button id="uploadBtn">Upload & publish section</button>
+  <div class="log" id="log">Ready.</div>
+</div>
+
+<script>
+  const CFG_KEY = 'vybz_admin_cfg_v1';
+  const $ = (id) => document.getElementById(id);
+  const logEl = $('log');
+  function log(msg, cls){
+    const line = document.createElement('div');
+    if(cls) line.className = cls;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function getConfig(){
+    try{ return JSON.parse(localStorage.getItem(CFG_KEY) || 'null'); } catch(e){ return null; }
+  }
+  function setConfig(cfg){ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }
+
+  function loadSavedConfig(){
+    const cfg = getConfig();
+    if(cfg){
+      $('ghOwner').value = cfg.owner || '';
+      $('ghRepo').value = cfg.repo || '';
+      $('ghBranch').value = cfg.branch || 'main';
+      $('ghToken').value = cfg.token || '';
+      $('setupStatus').classList.add('show');
+    }
+  }
+  loadSavedConfig();
+
+  $('saveConfig').addEventListener('click', () => {
+    const cfg = {
+      owner: $('ghOwner').value.trim(),
+      repo: $('ghRepo').value.trim(),
+      branch: $('ghBranch').value.trim() || 'main',
+      token: $('ghToken').value.trim()
+    };
+    if(!cfg.owner || !cfg.repo || !cfg.token){
+      alert('Username, repo, and token are all required.');
+      return;
+    }
+    setConfig(cfg);
+    $('setupStatus').classList.add('show');
+    log('Connection saved locally.', 'ok');
+  });
+
+  $('clearConfig').addEventListener('click', () => {
+    localStorage.removeItem(CFG_KEY);
+    $('ghOwner').value = ''; $('ghRepo').value = ''; $('ghToken').value = '';
+    $('setupStatus').classList.remove('show');
+    log('Saved connection cleared.');
+  });
+
+  function apiBase(){
+    const cfg = getConfig();
+    if(!cfg) throw new Error('No GitHub connection configured yet — fill in step 1.');
+    return cfg;
+  }
+
+  async function ghGet(path){
+    const cfg = apiBase();
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${cfg.branch}`;
+    const res = await fetch(url, { headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json' } });
+    if(res.status === 404) return null;
+    if(!res.ok) throw new Error(`GET ${path} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
+
+  async function ghPut(path, contentBase64, message, sha){
+    const cfg = apiBase();
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+    const body = { message, content: contentBase64, branch: cfg.branch };
+    if(sha) body.sha = sha;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error(`PUT ${path} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
+
+  async function ghDelete(path, sha, message){
+    const cfg = apiBase();
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, sha, branch: apiBase().branch })
+    });
+    if(!res.ok) throw new Error(`DELETE ${path} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
+
+  async function loadContentJson(){
+    const file = await ghGet('data/content.json');
+    if(!file){
+      return { _sha:null, data:{ categories:{ 'real-estate':{sections:[]}, events:{sections:[]}, beauty:{sections:[]}, model:{sections:[]}, drone:{sections:[]}, corporate:{sections:[]} } } };
+    }
+    const decoded = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+    return { _sha: file.sha, data: JSON.parse(decoded) };
+  }
+
+  async function saveContentJson(dataObj, sha, message){
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj, null, 2))));
+    return ghPut('data/content.json', encoded, message, sha);
+  }
+
+  function slugify(str){
+    return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.random().toString(36).slice(2,6);
+  }
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function detectOrientation(file){
+    return new Promise((resolve) => {
+      if(file.type.startsWith('video/')){
+        const v = document.createElement('video');
+        v.preload = 'metadata';
+        v.onloadedmetadata = () => resolve(v.videoWidth >= v.videoHeight ? 'horizontal' : 'portrait');
+        v.onerror = () => resolve('horizontal');
+        v.src = URL.createObjectURL(file);
+      } else {
+        const img = new Image();
+        img.onload = () => resolve(img.width >= img.height ? 'horizontal' : 'portrait');
+        img.onerror = () => resolve('horizontal');
+        img.src = URL.createObjectURL(file);
+      }
+    });
+  }
+
+  // ---------- Load & render existing sections for a category ----------
+  $('loadSections').addEventListener('click', async () => {
+    const category = $('categorySelect').value;
+    const listEl = $('sectionsList');
+    listEl.innerHTML = '<p class="hint">Loading…</p>';
+    try{
+      const { data } = await loadContentJson();
+      const sections = (data.categories[category] && data.categories[category].sections) || [];
+      if(sections.length === 0){
+        listEl.innerHTML = '<p class="hint">No sections yet for this category.</p>';
+        return;
+      }
+      listEl.innerHTML = '';
+      sections.forEach(sec => {
+        const row = document.createElement('div');
+        row.className = 'section-item';
+        row.innerHTML = `
+          <div class="meta">${sec.name.fr}${sec.name.en ? ' / ' + sec.name.en : ''}<span>${sec.media.length} file(s) · id: ${sec.id}</span></div>
+          <button class="secondary" data-id="${sec.id}">Delete section</button>
+        `;
+        row.querySelector('button').addEventListener('click', () => deleteSection(category, sec.id));
+        listEl.appendChild(row);
+      });
+    } catch(err){
+      listEl.innerHTML = '';
+      log(err.message, 'err');
+    }
+  });
+
+  async function deleteSection(category, sectionId){
+    if(!confirm('Delete this section from the live site? (Uploaded files stay in the repo — only the listing is removed. You can delete files manually in GitHub if needed.)')) return;
+    try{
+      const { data, _sha } = await loadContentJson();
+      data.categories[category].sections = data.categories[category].sections.filter(s => s.id !== sectionId);
+      await saveContentJson(data, _sha, `Remove section ${sectionId} from ${category}`);
+      log(`Section ${sectionId} removed.`, 'ok');
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  // ---------- Upload new section ----------
+  $('uploadBtn').addEventListener('click', async () => {
+    const category = $('categorySelect').value;
+    const nameFr = $('secNameFr').value.trim();
+    const nameEn = $('secNameEn').value.trim();
+    const files = $('mediaFiles').files;
+
+    if(!nameFr){ alert('Section name (FR) is required.'); return; }
+    if(!files || files.length === 0){ alert('Choose at least one photo or video.'); return; }
+
+    const btn = $('uploadBtn');
+    btn.disabled = true;
+    log(`Starting upload of ${files.length} file(s)…`);
+
+    try{
+      const sectionId = slugify(nameFr);
+      const mediaEntries = [];
+
+      for(const file of files){
+        log(`Reading ${file.name}…`);
+        const base64 = await fileToBase64(file);
+        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(file);
+        const type = file.type.startsWith('video/') ? 'video' : 'photo';
+        const ext = file.name.split('.').pop();
+        const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const folder = type === 'video' ? 'assets/video' : 'assets/images';
+        const path = `${folder}/${category}/${sectionId}/${cleanName}`;
+
+        log(`Uploading ${file.name} → ${path}…`);
+        const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
+        mediaEntries.push({ type, orientation, path, sha: result.content.sha });
+        log(`Uploaded ${file.name}`, 'ok');
+      }
+
+      log('Updating content.json…');
+      const { data, _sha } = await loadContentJson();
+      if(!data.categories[category]) data.categories[category] = { sections: [] };
+      data.categories[category].sections.push({
+        id: sectionId,
+        name: { fr: nameFr, en: nameEn || nameFr },
+        media: mediaEntries
+      });
+      await saveContentJson(data, _sha, `Add section "${nameFr}" to ${category}`);
+      log(`Section "${nameFr}" published with ${mediaEntries.length} file(s).`, 'ok');
+      log('Live site will show it after GitHub Pages redeploys (usually under a minute).', 'ok');
+
+      $('secNameFr').value = ''; $('secNameEn').value = ''; $('mediaFiles').value = '';
+    } catch(err){
+      log(err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
