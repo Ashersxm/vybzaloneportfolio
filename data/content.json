@@ -1,7 +1,23 @@
 {
   "categories": {
     "real-estate": {
-      "sections": []
+      "sections": [
+        {
+          "id": "villa-casa-nostra-tl1c",
+          "name": {
+            "fr": "Villa Casa Nostra",
+            "en": "Villa Casa Nostra"
+          },
+          "media": [
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/real-estate/villa-casa-nostra-tl1c/1783351432618-hfp3i.jpg",
+              "sha": "4dd507d73cbbd518c79d1697a439beaafdb10f52"
+            }
+          ]
+        }
+      ]
     },
     "events": {
       "sections": []
