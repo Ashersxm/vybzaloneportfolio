@@ -914,7 +914,23 @@
       ]
     },
     "drone": {
-      "sections": []
+      "sections": [
+        {
+          "id": "vue-d-au-dessus-pnmf",
+          "name": {
+            "fr": "Vue d'au-dessus",
+            "en": "Vue d'au-dessus"
+          },
+          "media": [
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/drone/vue-d-au-dessus-pnmf/1783379128223-ec7jg.jpg",
+              "sha": "1298a559ed3cb70467665d3513974e3143c62423"
+            }
+          ]
+        }
+      ]
     },
     "corporate": {
       "sections": [
