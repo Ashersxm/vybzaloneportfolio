@@ -811,7 +811,47 @@
       "sections": []
     },
     "corporate": {
-      "sections": []
+      "sections": [
+        {
+          "id": "hotel-director-i4du",
+          "name": {
+            "fr": "Hotel Director",
+            "en": "Hotel Director"
+          },
+          "media": [
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/corporate/hotel-director-i4du/1783375491006-p2ep5.jpg",
+              "sha": "5156bf2d579123407403c154e2ad4a90d70a8fbe"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/corporate/hotel-director-i4du/1783375492903-q8xjb.jpg",
+              "sha": "326ee5287411879a0afbf8b84e1797005b3c65d2"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/corporate/hotel-director-i4du/1783375495126-jik2g.jpg",
+              "sha": "cd90a95a36aa2ca213baa560144bf0e1277a049e"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/corporate/hotel-director-i4du/1783375496942-7nht8.jpg",
+              "sha": "545695e4c4ff75588d7437720f0d9a07215e057d"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/corporate/hotel-director-i4du/1783375499007-9v4i7.jpg",
+              "sha": "d72d83256bd3b2e23cc39dcec87b86264a25e77f"
+            }
+          ]
+        }
+      ]
     }
   }
 }
