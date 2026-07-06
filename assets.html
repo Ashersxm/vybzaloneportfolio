@@ -48,11 +48,17 @@
   .log .ok{ color:var(--ok); }
   .log .err{ color:var(--signal); }
   .section-item{
-    display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid var(--line);
+    padding:14px 0; border-top:1px solid var(--line);
   }
+  .section-item .row-top{ display:flex; justify-content:space-between; align-items:center; }
   .section-item .meta{ font-size:13.5px; }
   .section-item .meta span{ display:block; color:var(--paper-dim); font-size:11px; margin-top:3px; }
-  .section-item button{ margin-top:0; padding:8px 14px; font-size:10px; }
+  .section-item .row-top button{ margin-top:0; padding:8px 14px; font-size:10px; }
+  .manage-panel{ display:none; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line); }
+  .manage-panel.open{ display:block; }
+  .media-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--line); font-size:12.5px; }
+  .media-row .path{ color:var(--paper-dim); font-family:'JetBrains Mono',monospace; font-size:10.5px; word-break:break-all; }
+  .media-row button{ margin-top:0; padding:6px 10px; font-size:9.5px; flex-shrink:0; margin-left:10px; }
   .setup-status{ font-size:12.5px; color:var(--ok); display:none; align-items:center; gap:8px; margin-top:10px; }
   .setup-status.show{ display:flex; }
   .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok); }
@@ -271,20 +277,141 @@
       }
       listEl.innerHTML = '';
       sections.forEach(sec => {
-        const row = document.createElement('div');
-        row.className = 'section-item';
-        row.innerHTML = `
-          <div class="meta">${sec.name.fr}${sec.name.en ? ' / ' + sec.name.en : ''}<span>${sec.media.length} file(s) · id: ${sec.id}</span></div>
-          <button class="secondary" data-id="${sec.id}">Delete section</button>
+        const item = document.createElement('div');
+        item.className = 'section-item';
+        item.innerHTML = `
+          <div class="row-top">
+            <div class="meta">${sec.name.fr}${sec.name.en ? ' / ' + sec.name.en : ''}<span>${sec.media.length} file(s) · id: ${sec.id}</span></div>
+            <div style="display:flex; gap:8px;">
+              <button class="secondary manage-toggle">Manage</button>
+              <button class="secondary delete-section">Delete section</button>
+            </div>
+          </div>
+          <div class="manage-panel">
+            <label>Section name (FR)</label>
+            <input type="text" class="edit-name-fr" value="${sec.name.fr.replace(/"/g,'&quot;')}">
+            <label>Section name (EN)</label>
+            <input type="text" class="edit-name-en" value="${(sec.name.en||'').replace(/"/g,'&quot;')}">
+            <button class="save-name">Save name</button>
+            <label style="margin-top:22px;">Existing files</label>
+            <div class="media-list"></div>
+            <label style="margin-top:18px;">Add more files to this section</label>
+            <input type="file" class="add-files" multiple accept="image/*,video/*">
+            <button class="append-files">Upload & add to section</button>
+          </div>
         `;
-        row.querySelector('button').addEventListener('click', () => deleteSection(category, sec.id));
-        listEl.appendChild(row);
+        item.querySelector('.delete-section').addEventListener('click', () => deleteSection(category, sec.id));
+        item.querySelector('.manage-toggle').addEventListener('click', () => {
+          const panel = item.querySelector('.manage-panel');
+          panel.classList.toggle('open');
+          if(panel.classList.contains('open')) renderMediaList(item, category, sec.id);
+        });
+        item.querySelector('.save-name').addEventListener('click', () => {
+          const fr = item.querySelector('.edit-name-fr').value.trim();
+          const en = item.querySelector('.edit-name-en').value.trim();
+          renameSection(category, sec.id, fr, en);
+        });
+        item.querySelector('.append-files').addEventListener('click', () => {
+          const files = item.querySelector('.add-files').files;
+          appendFilesToSection(category, sec.id, files, item);
+        });
+        listEl.appendChild(item);
       });
     } catch(err){
       listEl.innerHTML = '';
       log(err.message, 'err');
     }
   });
+
+  async function renderMediaList(itemEl, category, sectionId){
+    const container = itemEl.querySelector('.media-list');
+    container.innerHTML = '<p class="hint">Loading files…</p>';
+    try{
+      const { data } = await loadContentJson();
+      const sec = data.categories[category].sections.find(s => s.id === sectionId);
+      container.innerHTML = '';
+      if(!sec.media.length){ container.innerHTML = '<p class="hint">No files in this section yet.</p>'; return; }
+      sec.media.forEach((m, idx) => {
+        const row = document.createElement('div');
+        row.className = 'media-row';
+        row.innerHTML = `<span class="path">${m.type.toUpperCase()} · ${m.orientation} · ${m.path}</span><button class="secondary">Remove</button>`;
+        row.querySelector('button').addEventListener('click', () => removeMediaItem(category, sectionId, idx, itemEl));
+        container.appendChild(row);
+      });
+    } catch(err){
+      container.innerHTML = '';
+      log(err.message, 'err');
+    }
+  }
+
+  async function renameSection(category, sectionId, nameFr, nameEn){
+    if(!nameFr){ alert('French name cannot be empty.'); return; }
+    try{
+      const { data, _sha } = await loadContentJson();
+      const sec = data.categories[category].sections.find(s => s.id === sectionId);
+      sec.name = { fr: nameFr, en: nameEn || nameFr };
+      await saveContentJson(data, _sha, `Rename section ${sectionId}`);
+      log(`Section renamed to "${nameFr}".`, 'ok');
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  async function removeMediaItem(category, sectionId, mediaIndex, itemEl){
+    if(!confirm('Remove this file from the section? The file itself will also be deleted from the repo.')) return;
+    try{
+      const { data, _sha } = await loadContentJson();
+      const sec = data.categories[category].sections.find(s => s.id === sectionId);
+      const [removed] = sec.media.splice(mediaIndex, 1);
+      try{
+        if(removed.sha) await ghDelete(removed.path, removed.sha, `Remove file from ${sectionId}`);
+      } catch(fileErr){
+        log(`Warning: could not delete file from repo (${fileErr.message}) — removed from listing anyway.`, 'err');
+      }
+      await saveContentJson(data, _sha, `Remove media from section ${sectionId}`);
+      log('File removed.', 'ok');
+      renderMediaList(itemEl, category, sectionId);
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  async function appendFilesToSection(category, sectionId, files, itemEl){
+    if(!files || files.length === 0){ alert('Choose at least one file first.'); return; }
+    const btn = itemEl.querySelector('.append-files');
+    btn.disabled = true;
+    try{
+      const mediaEntries = [];
+      for(const file of files){
+        log(`Reading ${file.name}…`);
+        const base64 = await fileToBase64(file);
+        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(file);
+        const type = file.type.startsWith('video/') ? 'video' : 'photo';
+        const ext = file.name.split('.').pop();
+        const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+        const folder = type === 'video' ? 'assets/video' : 'assets/images';
+        const path = `${folder}/${category}/${sectionId}/${cleanName}`;
+        log(`Uploading ${file.name} → ${path}…`);
+        const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
+        mediaEntries.push({ type, orientation, path, sha: result.content.sha });
+        log(`Uploaded ${file.name}`, 'ok');
+      }
+      const { data, _sha } = await loadContentJson();
+      const sec = data.categories[category].sections.find(s => s.id === sectionId);
+      sec.media.push(...mediaEntries);
+      await saveContentJson(data, _sha, `Add ${mediaEntries.length} file(s) to section ${sectionId}`);
+      log(`${mediaEntries.length} file(s) added to section.`, 'ok');
+      itemEl.querySelector('.add-files').value = '';
+      renderMediaList(itemEl, category, sectionId);
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
 
   async function deleteSection(category, sectionId){
     if(!confirm('Delete this section from the live site? (Uploaded files stay in the repo — only the listing is removed. You can delete files manually in GitHub if needed.)')) return;
