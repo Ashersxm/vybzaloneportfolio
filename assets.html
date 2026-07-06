@@ -23,12 +23,13 @@
   .badge{ font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:100px; background:rgba(210,172,102,0.15); color:var(--brass); }
   label{ display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--paper-dim); margin-bottom:6px; margin-top:16px; }
   label:first-of-type{ margin-top:0; }
-  input[type=text], input[type=password], select{
+  input[type=text], input[type=password], select, textarea{
     width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--line-strong); color:var(--paper);
     padding:11px 13px; border-radius:6px; font-size:14px; font-family:'Inter',sans-serif;
   }
+  textarea{ font-family:'JetBrains Mono',monospace; font-size:12.5px; resize:vertical; }
   input[type=file]{ width:100%; font-size:13px; color:var(--paper-dim); }
-  input:focus, select:focus{ outline:none; border-color:var(--brass); }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--brass); }
   .row{ display:flex; gap:14px; }
   .row > div{ flex:1; }
   button{
@@ -68,6 +69,11 @@
   .media-thumb.dragging{ opacity:0.35; cursor:grabbing; }
   .media-thumb.drag-over{ outline:2px solid var(--brass); outline-offset:-2px; }
   .media-thumb img, .media-thumb video{ width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .media-thumb .play-badge{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:32px; height:32px;
+    border-radius:50%; background:rgba(16,18,22,0.6); color:var(--paper); font-size:12px;
+    display:flex; align-items:center; justify-content:center; pointer-events:none;
+  }
   .media-thumb .thumb-tag{
     position:absolute; bottom:5px; left:5px; font-family:'JetBrains Mono',monospace; font-size:8px;
     letter-spacing:0.05em; text-transform:uppercase; color:var(--paper); background:rgba(16,18,22,0.65);
@@ -154,6 +160,12 @@
   <p class="hint">
     Orientation (horizontal/portrait) is detected automatically from each file's dimensions.
     Real Estate is always displayed horizontal on the live site regardless of the source file, to stay consistent with walkthrough footage.
+  </p>
+  <label style="margin-top:22px;">Or embed YouTube videos (one URL per line, optional)</label>
+  <textarea id="youtubeUrls" rows="3" placeholder="https://www.youtube.com/watch?v=...&#10;https://youtu.be/...&#10;https://www.youtube.com/shorts/..."></textarea>
+  <p class="hint">
+    Orientation and thumbnail are fetched automatically from YouTube — works for both regular (horizontal) videos and Shorts (vertical).
+    No file size limit, so this is the best option for full walkthrough videos.
   </p>
   <button id="uploadBtn">Upload & publish section</button>
   <div class="log" id="log">Ready.</div>
@@ -320,6 +332,51 @@
       .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-' + Math.random().toString(36).slice(2,6);
   }
 
+  function extractYoutubeId(url){
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtube\.com\/shorts\/|youtube\.com\/embed\/|youtu\.be\/)([\w-]{11})/,
+    ];
+    for(const re of patterns){
+      const match = url.match(re);
+      if(match) return match[1];
+    }
+    return null;
+  }
+
+  function parseYoutubeUrls(text){
+    return text.split('\n').map(l => l.trim()).filter(Boolean);
+  }
+
+  // YouTube's oEmbed endpoint is public (no API key) and returns the video's real
+  // width/height, which is how we tell a regular upload from a vertical Short apart.
+  async function fetchYoutubeMeta(youtubeId){
+    const videoUrl = encodeURIComponent(`https://youtu.be/${youtubeId}`);
+    const res = await fetch(`https://www.youtube.com/oembed?url=${videoUrl}&format=json`);
+    if(!res.ok) throw new Error(`Could not look up YouTube video ${youtubeId} \u2014 check the URL is public.`);
+    const data = await res.json();
+    return {
+      title: data.title,
+      orientation: data.width >= data.height ? 'horizontal' : 'portrait',
+    };
+  }
+
+  async function buildYoutubeEntries(urlsText, category){
+    const entries = [];
+    for(const url of parseYoutubeUrls(urlsText)){
+      const youtubeId = extractYoutubeId(url);
+      if(!youtubeId){
+        log(`Skipping "${url}" — doesn't look like a YouTube URL.`, 'err');
+        continue;
+      }
+      log(`Looking up YouTube video ${youtubeId}…`);
+      const meta = await fetchYoutubeMeta(youtubeId);
+      const orientation = category === 'real-estate' ? 'horizontal' : meta.orientation;
+      entries.push({ type: 'youtube', orientation, youtubeId, title: meta.title });
+      log(`Added "${meta.title}" (${orientation})`, 'ok');
+    }
+    return entries;
+  }
+
   function fileToBase64(file){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -475,6 +532,8 @@
             <label style="margin-top:18px;">Add more files to this section</label>
             <input type="file" class="add-files" multiple accept="image/*,video/*">
             <div class="file-preview add-files-preview"></div>
+            <label style="margin-top:14px;">Or add YouTube videos (one URL per line)</label>
+            <textarea class="add-youtube" rows="2" placeholder="https://www.youtube.com/watch?v=...&#10;https://www.youtube.com/shorts/..."></textarea>
             <button class="append-files">Upload & add to section</button>
           </div>
         `;
@@ -501,7 +560,8 @@
         });
         item.querySelector('.append-files').addEventListener('click', () => {
           const files = addFilesPicker.getFiles();
-          appendFilesToSection(category, sec.id, files, item, addFilesPicker);
+          const youtubeUrlsText = item.querySelector('.add-youtube').value.trim();
+          appendFilesToSection(category, sec.id, files, item, addFilesPicker, youtubeUrlsText);
         });
         listEl.appendChild(item);
       });
@@ -524,12 +584,17 @@
       sec.media.forEach((m, idx) => {
         const thumb = document.createElement('div');
         thumb.className = 'media-thumb';
-        thumb.title = m.path;
+        thumb.title = m.type === 'youtube' ? (m.title || m.youtubeId) : m.path;
         thumb.draggable = true;
         thumb.dataset.idx = idx;
-        const mediaEl = m.type === 'video'
-          ? `<video src="${m.path}#t=0.1" muted playsinline preload="metadata"></video>`
-          : `<img src="${m.path}" alt="" loading="lazy">`;
+        let mediaEl;
+        if(m.type === 'youtube'){
+          mediaEl = `<img src="https://img.youtube.com/vi/${m.youtubeId}/hqdefault.jpg" alt="" loading="lazy"><span class="play-badge">▶</span>`;
+        } else if(m.type === 'video'){
+          mediaEl = `<video src="${m.path}#t=0.1" muted playsinline preload="metadata"></video>`;
+        } else {
+          mediaEl = `<img src="${m.path}" alt="" loading="lazy">`;
+        }
         thumb.innerHTML = `
           ${mediaEl}
           <span class="thumb-tag">${m.type} · ${m.orientation}</span>
@@ -679,8 +744,11 @@
     return { path, sha: result.content.sha };
   }
 
-  async function appendFilesToSection(category, sectionId, files, itemEl, filePicker){
-    if(!files || files.length === 0){ alert('Choose at least one file first.'); return; }
+  async function appendFilesToSection(category, sectionId, files, itemEl, filePicker, youtubeUrlsText){
+    if(files.length === 0 && !youtubeUrlsText){
+      alert('Choose at least one file, or add a YouTube URL, first.');
+      return;
+    }
     const btn = itemEl.querySelector('.append-files');
     btn.disabled = true;
     try{
@@ -692,12 +760,16 @@
         const { path, sha } = await uploadMediaEntry(rawFile, type, folder, category, sectionId);
         mediaEntries.push({ type, orientation, path, sha });
       }
+      if(youtubeUrlsText){
+        mediaEntries.push(...await buildYoutubeEntries(youtubeUrlsText, category));
+      }
       await updateContentJson((data) => {
         const sec = data.categories[category].sections.find(s => s.id === sectionId);
         sec.media.push(...mediaEntries);
       }, `Add ${mediaEntries.length} file(s) to section ${sectionId}`);
       log(`${mediaEntries.length} file(s) added to section.`, 'ok');
       filePicker.clear();
+      itemEl.querySelector('.add-youtube').value = '';
       renderMediaList(itemEl, category, sectionId);
       $('loadSections').click();
     } catch(err){
@@ -728,9 +800,13 @@
     const nameFr = $('secNameFr').value.trim();
     const nameEn = $('secNameEn').value.trim();
     const files = mediaFilesPicker.getFiles();
+    const youtubeUrlsText = $('youtubeUrls').value.trim();
 
     if(!nameFr){ alert('Section name (FR) is required.'); return; }
-    if(!files || files.length === 0){ alert('Choose at least one photo or video.'); return; }
+    if(files.length === 0 && !youtubeUrlsText){
+      alert('Choose at least one photo/video, or add a YouTube URL.');
+      return;
+    }
 
     const btn = $('uploadBtn');
     btn.disabled = true;
@@ -748,6 +824,10 @@
         mediaEntries.push({ type, orientation, path, sha });
       }
 
+      if(youtubeUrlsText){
+        mediaEntries.push(...await buildYoutubeEntries(youtubeUrlsText, category));
+      }
+
       log('Updating content.json…');
       await updateContentJson((data) => {
         if(!data.categories[category]) data.categories[category] = { sections: [] };
@@ -760,7 +840,8 @@
       log(`Section "${nameFr}" published with ${mediaEntries.length} file(s).`, 'ok');
       log('Live site will show it after GitHub Pages redeploys (usually under a minute).', 'ok');
 
-      $('secNameFr').value = ''; $('secNameEn').value = ''; mediaFilesPicker.clear();
+      $('secNameFr').value = ''; $('secNameEn').value = ''; $('youtubeUrls').value = '';
+      mediaFilesPicker.clear();
     } catch(err){
       log(err.message, 'err');
     } finally {

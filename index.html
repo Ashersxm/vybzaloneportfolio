@@ -901,6 +901,24 @@
       .cell:hover video {
         transform: scale(1.04);
       }
+      .cell .play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 54px;
+        height: 54px;
+        border-radius: 100px;
+        background: rgba(16, 18, 22, 0.55);
+        color: var(--paper);
+        font-size: 18px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        backdrop-filter: blur(4px);
+      }
       .filmstrip-pager {
         display: none;
         align-items: center;
@@ -2059,10 +2077,23 @@
       function renderLightboxMedia() {
         const m = currentGalleryMedia[lightboxIndex];
         if (!m) return;
-        lightboxStage.innerHTML =
-          m.type === 'video'
-            ? `<video src="${m.mediaSrc}" controls autoplay playsinline></video>`
-            : `<img src="${m.mediaSrc}" alt="${m.alt || ''}">`;
+        if (m.type === 'youtube') {
+          const ratio = m.orientation === 'horizontal' ? 16 / 9 : 9 / 16;
+          const maxW = window.innerWidth * 0.86;
+          const maxH = window.innerHeight * 0.86;
+          let w = maxW;
+          let h = w / ratio;
+          if (h > maxH) {
+            h = maxH;
+            w = h * ratio;
+          }
+          lightboxStage.innerHTML = `<iframe width="${Math.round(w)}" height="${Math.round(h)}" src="https://www.youtube.com/embed/${m.youtubeId}?autoplay=1&rel=0" title="${m.alt || ''}" style="border:0; border-radius:4px;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+        } else {
+          lightboxStage.innerHTML =
+            m.type === 'video'
+              ? `<video src="${m.mediaSrc}" controls autoplay playsinline></video>`
+              : `<img src="${m.mediaSrc}" alt="${m.alt || ''}">`;
+        }
         lightboxCount.textContent = `${String(lightboxIndex + 1).padStart(2, '0')} / ${String(currentGalleryMedia.length).padStart(2, '0')}`;
       }
 
@@ -2120,8 +2151,12 @@
       function renderRealSection(section) {
         currentGalleryMedia = section.media.map((m) => ({
           type: m.type,
-          mediaSrc: m.path,
-          poster: null,
+          mediaSrc: m.type === 'youtube' ? null : m.path,
+          poster:
+            m.type === 'youtube'
+              ? `https://img.youtube.com/vi/${m.youtubeId}/hqdefault.jpg`
+              : null,
+          youtubeId: m.type === 'youtube' ? m.youtubeId : null,
           alt: section.name[lang] || section.name.fr,
           orientation: m.orientation,
           footerTag: null,
@@ -2192,12 +2227,17 @@
       function filmstripCellHtml(item) {
         const ratioLabel = item.orientation === 'horizontal' ? '16:9' : '4:5';
         const posterAttr = item.poster ? ` poster="${item.poster}"` : '';
-        const mediaEl =
-          item.type === 'video'
-            ? `<video src="${item.mediaSrc}"${posterAttr} muted loop playsinline autoplay></video>`
-            : `<img src="${item.mediaSrc}" alt="${item.alt || ''}">`;
+        let mediaEl;
+        if (item.type === 'youtube') {
+          mediaEl = `<img src="${item.poster}" alt="${item.alt || ''}"><span class="play-overlay">▶</span>`;
+        } else if (item.type === 'video') {
+          mediaEl = `<video src="${item.mediaSrc}"${posterAttr} muted loop playsinline autoplay></video>`;
+        } else {
+          mediaEl = `<img src="${item.mediaSrc}" alt="${item.alt || ''}">`;
+        }
+        const isVideoLike = item.type === 'video' || item.type === 'youtube';
         return `
-          <div class="ratio-tag">${item.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
+          <div class="ratio-tag">${isVideoLike ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
           ${mediaEl}
           ${item.footerTag ? `<div class="tag">${item.footerTag}</div>` : ''}
         `;
