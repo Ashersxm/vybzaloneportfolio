@@ -391,7 +391,7 @@
         const type = file.type.startsWith('video/') ? 'video' : 'photo';
         const ext = file.name.split('.').pop();
         const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-        const folder = type === 'video' ? 'assets/video' : 'assets/images';
+        const folder = type === 'video' ? 'video' : 'images';
         const path = `${folder}/${category}/${sectionId}/${cleanName}`;
         log(`Uploading ${file.name} → ${path}…`);
         const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
@@ -451,9 +451,8 @@
         const type = file.type.startsWith('video/') ? 'video' : 'photo';
         const ext = file.name.split('.').pop();
         const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-        const folder = type === 'video' ? 'assets/video' : 'assets/images';
+        const folder = type === 'video' ? 'video' : 'images';
         const path = `${folder}/${category}/${sectionId}/${cleanName}`;
-
         log(`Uploading ${file.name} → ${path}…`);
         const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
         mediaEntries.push({ type, orientation, path, sha: result.content.sha });

@@ -452,6 +452,37 @@
         gap: 10px;
         margin-bottom: 24px;
       }
+      .hero-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+
+      .hero-logo img {
+        width: 100%;
+        max-width: 650px; /* Desktop */
+        height: auto;
+        object-fit: contain;
+      }
+
+      @media (max-width: 1200px) {
+        .hero-logo img {
+          max-width: 520px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero-logo img {
+          max-width: 360px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero-logo img {
+          max-width: 260px;
+        }
+      }
       .rec-dot {
         width: 7px;
         height: 7px;
@@ -535,7 +566,7 @@
           0 0 0 1px var(--line);
       }
       .viewfinder img {
-        filter: grayscale(1) contrast(1.05) brightness(0.85);
+        filter: contrast(1.05) brightness(0.95) saturate(1.05);
         transition: transform 1.2s var(--ease);
       }
       .viewfinder:hover img {
@@ -1413,8 +1444,8 @@
       <div class="contact-grid">
         <div class="reveal">
           <h2 data-i18n-html="contact.title">
-            Un bien, un événement, une marque<br /><em
-              >à filmer comme il se doit ?</em
+            Un bien, un événement, une marque...<br /><em
+              >Prêt à révéler son plein potentiel ?</em
             >
           </h2>
           <p class="contact-copy" data-i18n="contact.copy">
@@ -1430,7 +1461,11 @@
             </div>
             <div class="contact-row">
               <span class="k" data-i18n="contact.instagram">Instagram</span
-              ><a class="v" href="#" target="_blank" rel="noopener"
+              ><a
+                class="v"
+                href="https://www.instagram.com/vybz.alone/saved/"
+                target="_blank"
+                rel="noopener"
                 >@vybzalone</a
               >
             </div>
@@ -1753,8 +1788,7 @@
           btn.setAttribute('data-id', c.id);
           btn.innerHTML = `
         <span class="num mono">0${i + 1}</span>
-        <img src="https://picsum.photos/seed/${c.seed}/700/700" alt="${c.label[lang]} sample">
-        <div class="label"><h3>${c.label[lang]}</h3><span>${c.tag[lang]}</span></div>
+<img src="images/${c.id}/cover.jpg" alt="${c.label[lang]} sample" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${c.seed}/700/700';">        <div class="label"><h3>${c.label[lang]}</h3><span>${c.tag[lang]}</span></div>
       `;
           btn.addEventListener('mousemove', (e) => {
             const r = btn.getBoundingClientRect();
