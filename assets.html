@@ -277,6 +277,94 @@
     });
   }
 
+  // Native file inputs replace the whole selection on every pick. This accumulates
+  // files across repeated picks into `previewEl`, removable individually via the x button.
+  function createFilePicker(inputEl, previewEl){
+    let files = [];
+    const fileKey = (f) => `${f.name}_${f.size}_${f.lastModified}`;
+
+    function render(){
+      previewEl.innerHTML = '';
+      files.forEach((f, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'file-chip';
+        chip.innerHTML = `<span>${f.name}</span><button type="button" class="remove-file">&times;</button>`;
+        chip.querySelector('.remove-file').addEventListener('click', () => {
+          files.splice(idx, 1);
+          render();
+        });
+        previewEl.appendChild(chip);
+      });
+    }
+
+    inputEl.addEventListener('change', () => {
+      const existingKeys = new Set(files.map(fileKey));
+      Array.from(inputEl.files).forEach((f) => {
+        const key = fileKey(f);
+        if(!existingKeys.has(key)){
+          files.push(f);
+          existingKeys.add(key);
+        }
+      });
+      inputEl.value = '';
+      render();
+    });
+
+    return {
+      getFiles: () => files,
+      clear: () => { files = []; render(); },
+    };
+  }
+
+  // GitHub's Contents API caps the base64-encoded content at ~1MB. Base64 inflates
+  // raw bytes by ~1.37x, so anything above ~700KB raw can tip over that limit — round
+  // trip failures like this are expensive, so we shrink proactively before uploading.
+  const SAFE_RAW_BYTES = 700_000;
+  const COMPRESSION_STEPS = [
+    { maxDim: 2400, quality: 0.85 },
+    { maxDim: 1800, quality: 0.75 },
+    { maxDim: 1400, quality: 0.65 },
+    { maxDim: 1000, quality: 0.55 },
+    { maxDim: 700, quality: 0.5 },
+  ];
+
+  function compressImage(file, maxDim, quality){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDim || height > maxDim){
+          if(width >= height){ height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        canvas.toBlob((blob) => {
+          URL.revokeObjectURL(img.src);
+          if(!blob){ reject(new Error(`Could not compress ${file.name}.`)); return; }
+          const ext = outType === 'image/png' ? 'png' : 'jpg';
+          const cleanName = file.name.replace(/\.[^.]+$/, '') + '.' + ext;
+          resolve(new File([blob], cleanName, { type: outType }));
+        }, outType, quality);
+      };
+      img.onerror = () => reject(new Error(`Could not read ${file.name} for compression.`));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // Re-encodes at progressively smaller sizes until the result is safely under GitHub's limit.
+  async function shrinkUntilSafe(rawFile, onStep){
+    let output = rawFile;
+    for(const step of COMPRESSION_STEPS){
+      onStep && onStep(step);
+      output = await compressImage(rawFile, step.maxDim, step.quality);
+      if(output.size <= SAFE_RAW_BYTES) break;
+    }
+    return output;
+  }
+
   // ---------- Load & render existing sections for a category ----------
   $('loadSections').addEventListener('click', async () => {
     const category = $('categorySelect').value;
@@ -311,9 +399,14 @@
             <div class="media-list"></div>
             <label style="margin-top:18px;">Add more files to this section</label>
             <input type="file" class="add-files" multiple accept="image/*,video/*">
+            <div class="file-preview add-files-preview"></div>
             <button class="append-files">Upload & add to section</button>
           </div>
         `;
+        const addFilesPicker = createFilePicker(
+          item.querySelector('.add-files'),
+          item.querySelector('.add-files-preview')
+        );
         item.querySelector('.delete-section').addEventListener('click', () => deleteSection(category, sec.id));
         item.querySelector('.manage-toggle').addEventListener('click', () => {
           const panel = item.querySelector('.manage-panel');
@@ -326,8 +419,8 @@
           renameSection(category, sec.id, fr, en);
         });
         item.querySelector('.append-files').addEventListener('click', () => {
-          const files = item.querySelector('.add-files').files;
-          appendFilesToSection(category, sec.id, files, item);
+          const files = addFilesPicker.getFiles();
+          appendFilesToSection(category, sec.id, files, item, addFilesPicker);
         });
         listEl.appendChild(item);
       });
@@ -392,32 +485,49 @@
     }
   }
 
-  async function appendFilesToSection(category, sectionId, files, itemEl){
+  async function appendFilesToSection(category, sectionId, files, itemEl, filePicker){
     if(!files || files.length === 0){ alert('Choose at least one file first.'); return; }
     const btn = itemEl.querySelector('.append-files');
     btn.disabled = true;
     try{
       const mediaEntries = [];
-      for(const file of files){
+      for(const rawFile of files){
+        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(rawFile);
+        const type = rawFile.type.startsWith('video/') ? 'video' : 'photo';
+        let file = rawFile;
+        if(type === 'photo' && rawFile.size > SAFE_RAW_BYTES){
+          log(`Compressing ${rawFile.name} (${(rawFile.size/1_000_000).toFixed(2)}MB)…`);
+          file = await shrinkUntilSafe(rawFile);
+          log(`Compressed to ${(file.size/1_000_000).toFixed(2)}MB`, 'ok');
+        }
         log(`Reading ${file.name}…`);
-        const base64 = await fileToBase64(file);
-        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(file);
-        const type = file.type.startsWith('video/') ? 'video' : 'photo';
+        let base64 = await fileToBase64(file);
         const ext = file.name.split('.').pop();
         const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
         const folder = type === 'video' ? 'video' : 'images';
         const path = `${folder}/${category}/${sectionId}/${cleanName}`;
-        log(`Uploading ${file.name} → ${path}…`);
-        const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
+        log(`Uploading ${rawFile.name} → ${path}…`);
+        const message = `Add ${rawFile.name} to ${category}/${sectionId}`;
+        let result;
+        try{
+          result = await ghPut(path, base64, message);
+        } catch(err){
+          if(type !== 'photo' || !/too large/i.test(err.message)) throw err;
+          log(`Still too large — recompressing ${rawFile.name} harder…`, 'err');
+          const hardest = COMPRESSION_STEPS[COMPRESSION_STEPS.length - 1];
+          file = await compressImage(rawFile, hardest.maxDim, hardest.quality);
+          base64 = await fileToBase64(file);
+          result = await ghPut(path, base64, message);
+        }
         mediaEntries.push({ type, orientation, path, sha: result.content.sha });
-        log(`Uploaded ${file.name}`, 'ok');
+        log(`Uploaded ${rawFile.name}`, 'ok');
       }
       const { data, _sha } = await loadContentJson();
       const sec = data.categories[category].sections.find(s => s.id === sectionId);
       sec.media.push(...mediaEntries);
       await saveContentJson(data, _sha, `Add ${mediaEntries.length} file(s) to section ${sectionId}`);
       log(`${mediaEntries.length} file(s) added to section.`, 'ok');
-      itemEl.querySelector('.add-files').value = '';
+      filePicker.clear();
       renderMediaList(itemEl, category, sectionId);
       $('loadSections').click();
     } catch(err){
@@ -441,11 +551,13 @@
   }
 
   // ---------- Upload new section ----------
+  const mediaFilesPicker = createFilePicker($('mediaFiles'), $('mediaFilesPreview'));
+
   $('uploadBtn').addEventListener('click', async () => {
     const category = $('categorySelect').value;
     const nameFr = $('secNameFr').value.trim();
     const nameEn = $('secNameEn').value.trim();
-    const files = $('mediaFiles').files;
+    const files = mediaFilesPicker.getFiles();
 
     if(!nameFr){ alert('Section name (FR) is required.'); return; }
     if(!files || files.length === 0){ alert('Choose at least one photo or video.'); return; }
@@ -458,19 +570,36 @@
       const sectionId = slugify(nameFr);
       const mediaEntries = [];
 
-      for(const file of files){
+      for(const rawFile of files){
+        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(rawFile);
+        const type = rawFile.type.startsWith('video/') ? 'video' : 'photo';
+        let file = rawFile;
+        if(type === 'photo' && rawFile.size > SAFE_RAW_BYTES){
+          log(`Compressing ${rawFile.name} (${(rawFile.size/1_000_000).toFixed(2)}MB)…`);
+          file = await shrinkUntilSafe(rawFile);
+          log(`Compressed to ${(file.size/1_000_000).toFixed(2)}MB`, 'ok');
+        }
         log(`Reading ${file.name}…`);
-        const base64 = await fileToBase64(file);
-        const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(file);
-        const type = file.type.startsWith('video/') ? 'video' : 'photo';
+        let base64 = await fileToBase64(file);
         const ext = file.name.split('.').pop();
         const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
         const folder = type === 'video' ? 'video' : 'images';
         const path = `${folder}/${category}/${sectionId}/${cleanName}`;
-        log(`Uploading ${file.name} → ${path}…`);
-        const result = await ghPut(path, base64, `Add ${file.name} to ${category}/${sectionId}`);
+        log(`Uploading ${rawFile.name} → ${path}…`);
+        const message = `Add ${rawFile.name} to ${category}/${sectionId}`;
+        let result;
+        try{
+          result = await ghPut(path, base64, message);
+        } catch(err){
+          if(type !== 'photo' || !/too large/i.test(err.message)) throw err;
+          log(`Still too large — recompressing ${rawFile.name} harder…`, 'err');
+          const hardest = COMPRESSION_STEPS[COMPRESSION_STEPS.length - 1];
+          file = await compressImage(rawFile, hardest.maxDim, hardest.quality);
+          base64 = await fileToBase64(file);
+          result = await ghPut(path, base64, message);
+        }
         mediaEntries.push({ type, orientation, path, sha: result.content.sha });
-        log(`Uploaded ${file.name}`, 'ok');
+        log(`Uploaded ${rawFile.name}`, 'ok');
       }
 
       log('Updating content.json…');
@@ -485,7 +614,7 @@
       log(`Section "${nameFr}" published with ${mediaEntries.length} file(s).`, 'ok');
       log('Live site will show it after GitHub Pages redeploys (usually under a minute).', 'ok');
 
-      $('secNameFr').value = ''; $('secNameEn').value = ''; $('mediaFiles').value = '';
+      $('secNameFr').value = ''; $('secNameEn').value = ''; mediaFilesPicker.clear();
     } catch(err){
       log(err.message, 'err');
     } finally {

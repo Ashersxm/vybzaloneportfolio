@@ -921,6 +921,11 @@
         scroll-snap-align: start;
         background: var(--ink-2);
         flex-shrink: 0;
+        cursor: pointer;
+      }
+      .cell:hover img,
+      .cell:hover video {
+        transform: scale(1.04);
       }
       .cell.horizontal {
         aspect-ratio: 16/9;
@@ -937,6 +942,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
       }
       .cell .tag {
         position: absolute;
@@ -983,6 +989,108 @@
           rgba(16, 18, 22, 0.75) 100%
         );
         pointer-events: none;
+      }
+
+      /* ---------- LIGHTBOX ---------- */
+      .lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 300;
+        background: rgba(10, 11, 14, 0.94);
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+      }
+      .lightbox.show {
+        display: flex;
+      }
+      .lightbox-stage {
+        max-width: 86vw;
+        max-height: 86vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lightbox-stage img,
+      .lightbox-stage video {
+        max-width: 86vw;
+        max-height: 86vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 4px;
+      }
+      .lightbox-close {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 100px;
+        border: 1px solid var(--line-strong);
+        background: transparent;
+        color: var(--paper);
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+      }
+      .lightbox-close:hover {
+        background: var(--brass-bright);
+        color: var(--ink);
+        border-color: var(--brass-bright);
+      }
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 52px;
+        height: 52px;
+        border-radius: 100px;
+        border: 1px solid var(--line-strong);
+        background: rgba(16, 18, 22, 0.55);
+        color: var(--paper);
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+      }
+      .lightbox-nav:hover {
+        background: var(--brass-bright);
+        color: var(--ink);
+        border-color: var(--brass-bright);
+      }
+      .lightbox-nav.prev {
+        left: 24px;
+      }
+      .lightbox-nav.next {
+        right: 24px;
+      }
+      .lightbox-count {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--paper-dim);
+      }
+      @media (max-width: 640px) {
+        .lightbox-nav {
+          width: 42px;
+          height: 42px;
+        }
+        .lightbox-nav.prev {
+          left: 10px;
+        }
+        .lightbox-nav.next {
+          right: 10px;
+        }
       }
 
       /* ---------- APPROACH ---------- */
@@ -1621,6 +1729,20 @@
       >
     </footer>
 
+    <div class="lightbox" id="lightbox">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+        ×
+      </button>
+      <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous">
+        ←
+      </button>
+      <div class="lightbox-stage" id="lightboxStage"></div>
+      <button class="lightbox-nav next" id="lightboxNext" aria-label="Next">
+        →
+      </button>
+      <span class="lightbox-count mono" id="lightboxCount">00 / 00</span>
+    </div>
+
     <script>
       let lang = 'fr';
 
@@ -1935,6 +2057,63 @@
       let activeSections = [];
       let activeSectionIndex = 0;
 
+      const lightbox = document.getElementById('lightbox');
+      const lightboxStage = document.getElementById('lightboxStage');
+      const lightboxCount = document.getElementById('lightboxCount');
+      let currentGalleryMedia = [];
+      let lightboxIndex = 0;
+
+      function renderLightboxMedia() {
+        const m = currentGalleryMedia[lightboxIndex];
+        if (!m) return;
+        lightboxStage.innerHTML =
+          m.type === 'video'
+            ? `<video src="${m.src}" controls autoplay playsinline></video>`
+            : `<img src="${m.src}" alt="${m.alt || ''}">`;
+        lightboxCount.textContent = `${String(lightboxIndex + 1).padStart(2, '0')} / ${String(currentGalleryMedia.length).padStart(2, '0')}`;
+      }
+
+      function openLightbox(index) {
+        if (!currentGalleryMedia.length) return;
+        lightboxIndex = index;
+        renderLightboxMedia();
+        lightbox.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('show');
+        lightboxStage.innerHTML = '';
+        document.body.style.overflow = '';
+      }
+
+      function stepLightbox(delta) {
+        if (!currentGalleryMedia.length) return;
+        lightboxIndex =
+          (lightboxIndex + delta + currentGalleryMedia.length) %
+          currentGalleryMedia.length;
+        renderLightboxMedia();
+      }
+
+      document
+        .getElementById('lightboxClose')
+        .addEventListener('click', closeLightbox);
+      document
+        .getElementById('lightboxPrev')
+        .addEventListener('click', () => stepLightbox(-1));
+      document
+        .getElementById('lightboxNext')
+        .addEventListener('click', () => stepLightbox(1));
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('show')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') stepLightbox(-1);
+        if (e.key === 'ArrowRight') stepLightbox(1);
+      });
+
       function categoryHasRealSections(categoryId) {
         return !!(
           liveContent &&
@@ -1947,6 +2126,11 @@
 
       function renderRealSection(section) {
         filmstrip.innerHTML = '';
+        currentGalleryMedia = section.media.map((m) => ({
+          type: m.type,
+          src: m.path,
+          alt: section.name[lang] || section.name.fr,
+        }));
         section.media.forEach((m, i) => {
           const cell = document.createElement('div');
           cell.className = `cell ${m.orientation}`;
@@ -1959,6 +2143,7 @@
         <div class="ratio-tag">${m.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
         ${mediaEl}
       `;
+          cell.addEventListener('click', () => openLightbox(i));
           filmstrip.appendChild(cell);
         });
         galleryCount.textContent = `01 / ${String(section.media.length).padStart(2, '0')}`;
@@ -2033,6 +2218,7 @@
           filmstrip.innerHTML = '';
           const shots = 8;
           galleryCount.textContent = `01 / ${String(shots).padStart(2, '0')}`;
+          currentGalleryMedia = [];
           for (let i = 1; i <= shots; i++) {
             const plan = mediaPlanFor(c.id, i);
             const cell = document.createElement('div');
@@ -2041,15 +2227,23 @@
               plan.orientation === 'horizontal' ? '16:9' : '4:5';
             const w = plan.orientation === 'horizontal' ? 800 : 500;
             const h = plan.orientation === 'horizontal' ? 450 : 800;
+            const src = `https://picsum.photos/seed/${c.seed}${i}/${w}/${h}`;
             const mediaEl =
               plan.type === 'video'
-                ? `<video src="${VIDEO_SAMPLE}" poster="https://picsum.photos/seed/${c.seed}${i}/${w}/${h}" muted loop playsinline autoplay></video>`
-                : `<img src="https://picsum.photos/seed/${c.seed}${i}/${w}/${h}" alt="${c.label[lang]} still ${i}">`;
+                ? `<video src="${VIDEO_SAMPLE}" poster="${src}" muted loop playsinline autoplay></video>`
+                : `<img src="${src}" alt="${c.label[lang]} still ${i}">`;
             cell.innerHTML = `
           <div class="ratio-tag">${plan.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
           ${mediaEl}
           <div class="tag"><span>${plan.type === 'video' ? (lang === 'fr' ? 'VIDÉO' : 'VIDEO') : lang === 'fr' ? 'PHOTO' : 'PHOTO'}</span><span>${c.label[lang].toUpperCase()}_0${i}</span></div>
         `;
+            const mediaIndex = currentGalleryMedia.length;
+            currentGalleryMedia.push({
+              type: plan.type,
+              src: plan.type === 'video' ? VIDEO_SAMPLE : src,
+              alt: `${c.label[lang]} still ${i}`,
+            });
+            cell.addEventListener('click', () => openLightbox(mediaIndex));
             filmstrip.appendChild(cell);
           }
         }
