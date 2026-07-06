@@ -734,6 +734,21 @@
               "sha": "614f60df78467f816a49e352cdfd6eb76e12dc2c"
             }
           ]
+        },
+        {
+          "id": "aftermovie-night-of-the-hitmakers-sqzw",
+          "name": {
+            "fr": "Aftermovie Night of the Hitmakers",
+            "en": "Aftermovie Night of the Hitmakers"
+          },
+          "media": [
+            {
+              "type": "youtube",
+              "orientation": "horizontal",
+              "youtubeId": "dwaqiX8iYVc",
+              "title": "20260502 HITMAKERS AFTERMOVIE Final"
+            }
+          ]
         }
       ]
     },
