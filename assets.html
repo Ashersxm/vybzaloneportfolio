@@ -466,6 +466,9 @@
             <label>Section name (EN)</label>
             <input type="text" class="edit-name-en" value="${(sec.name.en||'').replace(/"/g,'&quot;')}">
             <button class="save-name">Save name</button>
+            <label style="margin-top:22px;">Category</label>
+            <select class="move-category"></select>
+            <button class="secondary move-section">Move to this category</button>
             <label style="margin-top:22px;">Existing files</label>
             <p class="hint" style="margin-top:0;">Drag thumbnails to reorder — this changes the order shown on the live site.</p>
             <div class="media-list"></div>
@@ -489,6 +492,12 @@
           const fr = item.querySelector('.edit-name-fr').value.trim();
           const en = item.querySelector('.edit-name-en').value.trim();
           renameSection(category, sec.id, fr, en);
+        });
+        const moveSelect = item.querySelector('.move-category');
+        moveSelect.innerHTML = $('categorySelect').innerHTML;
+        moveSelect.value = category;
+        item.querySelector('.move-section').addEventListener('click', () => {
+          moveSectionCategory(category, moveSelect.value, sec.id);
         });
         item.querySelector('.append-files').addEventListener('click', () => {
           const files = addFilesPicker.getFiles();
@@ -563,6 +572,25 @@
         sec.name = { fr: nameFr, en: nameEn || nameFr };
       }, `Rename section ${sectionId}`);
       log(`Section renamed to "${nameFr}".`, 'ok');
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  async function moveSectionCategory(fromCategory, toCategory, sectionId){
+    if(fromCategory === toCategory) return;
+    if(!confirm(`Move this section to "${toCategory}"? It will disappear from "${fromCategory}" and show up under the new category instead.`)) return;
+    try{
+      await updateContentJson((data) => {
+        const fromSections = data.categories[fromCategory].sections;
+        const idx = fromSections.findIndex(s => s.id === sectionId);
+        if(idx === -1) throw new Error('Section not found — it may have already moved.');
+        const [moved] = fromSections.splice(idx, 1);
+        if(!data.categories[toCategory]) data.categories[toCategory] = { sections: [] };
+        data.categories[toCategory].sections.push(moved);
+      }, `Move section ${sectionId} from ${fromCategory} to ${toCategory}`);
+      log(`Section moved to "${toCategory}".`, 'ok');
       $('loadSections').click();
     } catch(err){
       log(err.message, 'err');
