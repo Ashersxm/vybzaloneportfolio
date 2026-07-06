@@ -157,6 +157,8 @@
       }
       html {
         scroll-behavior: smooth;
+        overflow-x: hidden;
+        max-width: 100%;
       }
       body {
         background: var(--ink);
@@ -164,6 +166,7 @@
         font-family: 'Inter', sans-serif;
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
+        max-width: 100%;
         opacity: 0;
         animation: pageIn 1s var(--ease) forwards;
       }
@@ -1272,6 +1275,14 @@
         .contact-grid {
           grid-template-columns: 1fr;
           gap: 44px;
+        }
+        .contact-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+        }
+        .contact-row .v {
+          text-align: left;
         }
         section {
           padding: 90px 6vw;
