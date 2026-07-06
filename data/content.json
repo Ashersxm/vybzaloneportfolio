@@ -10,6 +10,12 @@
           },
           "media": [
             {
+              "type": "youtube",
+              "orientation": "horizontal",
+              "youtubeId": "o8I5qlkb5XA",
+              "title": "Video Casa Nostra"
+            },
+            {
               "type": "photo",
               "orientation": "horizontal",
               "path": "images/real-estate/villa-casa-nostra-tl1c/1783351432618-hfp3i.jpg",
@@ -272,12 +278,6 @@
               "orientation": "horizontal",
               "path": "images/real-estate/villa-casa-nostra-tl1c/1783352258469-da73t.jpg",
               "sha": "b30aecab84475c10c5329253b366631c48c5e95c"
-            },
-            {
-              "type": "youtube",
-              "orientation": "horizontal",
-              "youtubeId": "o8I5qlkb5XA",
-              "title": "Video Casa Nostra"
             }
           ]
         }
