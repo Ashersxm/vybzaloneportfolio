@@ -7,8 +7,8 @@
     <link rel="icon" type="image/svg+xml" href="assets/images/symbol.svg" />
 
     <title>
-      Vybz Alone — Photographe & Vidéographe Premium | Sud de la France,
-      Montpellier, Lyon, Paris
+      Vybz Alone — Votre partenaire visuel de marque | Photographie, vidéo &
+      drone
     </title>
     <meta
       name="description"
@@ -32,7 +32,7 @@
     <meta property="og:site_name" content="Vybz Alone" />
     <meta
       property="og:title"
-      content="Vybz Alone — Photographe & Vidéographe Premium"
+      content="Vybz Alone — Votre partenaire visuel de marque"
     />
     <meta
       property="og:description"
@@ -50,7 +50,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="Vybz Alone — Premium Photographer & Videographer"
+      content="Vybz Alone — Your Brand's Visual Partner"
     />
     <meta
       name="twitter:description"
@@ -878,47 +878,19 @@
         font-family: 'JetBrains Mono', monospace;
         font-size: 11px;
         color: var(--paper-dim);
-      }
-      .gallery-title .arrows {
-        display: flex;
-        gap: 8px;
         margin-left: auto;
-      }
-      .arrow-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 100px;
-        border: 1px solid var(--line-strong);
-        background: transparent;
-        color: var(--paper);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.25s ease;
-      }
-      .arrow-btn:hover {
-        background: var(--brass-bright);
-        color: var(--ink);
-        border-color: var(--brass-bright);
       }
       .filmstrip {
         display: flex;
+        flex-wrap: wrap;
         gap: 14px;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        padding-bottom: 8px;
-        scrollbar-width: none;
-        align-items: flex-end;
-      }
-      .filmstrip::-webkit-scrollbar {
-        display: none;
+        align-items: flex-start;
+        --cell-scale: 1;
       }
       .cell {
         position: relative;
         overflow: hidden;
         border-radius: 6px;
-        scroll-snap-align: start;
         background: var(--ink-2);
         flex-shrink: 0;
         cursor: pointer;
@@ -929,13 +901,13 @@
       }
       .cell.horizontal {
         aspect-ratio: 16/9;
-        flex-basis: 498px;
-        height: 280px;
+        flex-basis: calc(498px * var(--cell-scale));
+        height: calc(280px * var(--cell-scale));
       }
       .cell.portrait {
         aspect-ratio: 4/5;
-        flex-basis: 320px;
-        height: 400px;
+        flex-basis: calc(320px * var(--cell-scale));
+        height: calc(400px * var(--cell-scale));
       }
       .cell img,
       .cell video {
@@ -1395,12 +1367,12 @@
           padding: 90px 6vw;
         }
         .cell.horizontal {
-          flex-basis: 320px;
-          height: 180px;
+          flex-basis: calc(320px * var(--cell-scale));
+          height: calc(180px * var(--cell-scale));
         }
         .cell.portrait {
-          flex-basis: 224px;
-          height: 280px;
+          flex-basis: calc(224px * var(--cell-scale));
+          height: calc(280px * var(--cell-scale));
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -1532,15 +1504,7 @@
         <div class="gallery-title">
           <span class="dot"></span>
           <h3 id="galleryName">—</h3>
-          <span class="count mono" id="galleryCount">00 / 00</span>
-          <div class="arrows">
-            <button class="arrow-btn" id="scrollLeft" aria-label="Previous">
-              ←
-            </button>
-            <button class="arrow-btn" id="scrollRight" aria-label="Next">
-              →
-            </button>
-          </div>
+          <span class="count mono" id="galleryCount">00</span>
         </div>
         <div class="section-pills" id="sectionPills"></div>
         <div class="filmstrip" id="filmstrip"></div>
@@ -1993,8 +1957,8 @@
         document.getElementById('langToggleMobile').textContent = toggleLabel;
         document.title =
           lang === 'fr'
-            ? 'Vybz Alone — Photographe & Vidéographe Premium | Sud de la France, Montpellier, Lyon, Paris'
-            : 'Vybz Alone — Premium Photographer & Videographer | South of France, Saint-Martin, London';
+            ? 'Vybz Alone — Votre partenaire visuel de marque | Photographie, vidéo & drone'
+            : "Vybz Alone — Your Brand's Visual Partner | Photography, Video & Drone";
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
           metaDesc.setAttribute(
@@ -2146,7 +2110,7 @@
           cell.addEventListener('click', () => openLightbox(i));
           filmstrip.appendChild(cell);
         });
-        galleryCount.textContent = `01 / ${String(section.media.length).padStart(2, '0')}`;
+        galleryCount.textContent = `${section.media.length} ${lang === 'fr' ? 'ÉLÉMENTS' : 'ITEMS'}`;
       }
 
       function renderSectionPills() {
@@ -2197,6 +2161,33 @@
         return { orientation, type };
       }
 
+      // Shrinks the filmstrip's cell size as a section gets fuller, so it settles into
+      // roughly 2-3 rows instead of scrolling forever — clients can scan it at a glance.
+      function applyFilmstripScale() {
+        const count = filmstrip.children.length;
+        if (!count) return;
+        const horizCount =
+          filmstrip.querySelectorAll('.cell.horizontal').length;
+        const portraitCount = count - horizCount;
+        const isMobile = window.innerWidth <= 860;
+        const baseHoriz = isMobile ? 320 : 498;
+        const basePortrait = isMobile ? 224 : 320;
+        const avgBaseWidth =
+          (horizCount * baseHoriz + portraitCount * basePortrait) / count;
+        const gap = 14;
+        const targetRows = count <= 4 ? 1 : count <= 9 ? 2 : 3;
+        const perRow = Math.ceil(count / targetRows);
+        const containerWidth = filmstrip.clientWidth || 1200;
+        const scale = Math.min(
+          1,
+          Math.max(
+            0.32,
+            (containerWidth - (perRow - 1) * gap) / (perRow * avgBaseWidth),
+          ),
+        );
+        filmstrip.style.setProperty('--cell-scale', scale.toFixed(3));
+      }
+
       function openGallery(c, { scroll = true } = {}) {
         activeCategory = c;
         document
@@ -2217,7 +2208,7 @@
           galleryName.textContent = c.label[lang];
           filmstrip.innerHTML = '';
           const shots = 8;
-          galleryCount.textContent = `01 / ${String(shots).padStart(2, '0')}`;
+          galleryCount.textContent = `${shots} ${lang === 'fr' ? 'ÉLÉMENTS' : 'ITEMS'}`;
           currentGalleryMedia = [];
           for (let i = 1; i <= shots; i++) {
             const plan = mediaPlanFor(c.id, i);
@@ -2253,17 +2244,6 @@
           galleryWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       }
-
-      document
-        .getElementById('scrollLeft')
-        .addEventListener('click', () =>
-          filmstrip.scrollBy({ left: -280, behavior: 'smooth' }),
-        );
-      document
-        .getElementById('scrollRight')
-        .addEventListener('click', () =>
-          filmstrip.scrollBy({ left: 280, behavior: 'smooth' }),
-        );
 
       const statusMessages = {
         fr: {

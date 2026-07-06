@@ -59,6 +59,26 @@
   .media-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--line); font-size:12.5px; }
   .media-row .path{ color:var(--paper-dim); font-family:'JetBrains Mono',monospace; font-size:10.5px; word-break:break-all; }
   .media-row button{ margin-top:0; padding:6px 10px; font-size:9.5px; flex-shrink:0; margin-left:10px; }
+  .media-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px; margin-top:10px; }
+  .media-thumb{
+    position:relative; aspect-ratio:1/1; border-radius:8px; overflow:hidden;
+    background:rgba(255,255,255,0.03); border:1px solid var(--line-strong);
+    cursor:grab; transition:opacity 0.15s ease, outline 0.15s ease;
+  }
+  .media-thumb.dragging{ opacity:0.35; cursor:grabbing; }
+  .media-thumb.drag-over{ outline:2px solid var(--brass); outline-offset:-2px; }
+  .media-thumb img, .media-thumb video{ width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .media-thumb .thumb-tag{
+    position:absolute; bottom:5px; left:5px; font-family:'JetBrains Mono',monospace; font-size:8px;
+    letter-spacing:0.05em; text-transform:uppercase; color:var(--paper); background:rgba(16,18,22,0.65);
+    padding:2px 6px; border-radius:100px;
+  }
+  .media-thumb .remove-media{
+    all:unset; position:absolute; top:5px; right:5px; width:20px; height:20px; border-radius:50%;
+    background:rgba(16,18,22,0.7); color:var(--paper); font-size:13px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .media-thumb .remove-media:hover{ background:var(--signal); color:#fff; }
   .setup-status{ font-size:12.5px; color:var(--ok); display:none; align-items:center; gap:8px; margin-top:10px; }
   .setup-status.show{ display:flex; }
   .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok); }
@@ -232,6 +252,39 @@
     return res.json();
   }
 
+  async function ghApi(method, endpoint, payload){
+    const cfg = apiBase();
+    const res = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/${endpoint}`, {
+      method,
+      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: payload ? JSON.stringify(payload) : undefined
+    });
+    if(!res.ok) throw new Error(`${method} ${endpoint} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
+
+  // The Contents API (ghPut) caps the base64 payload at ~1MB, which video files blow
+  // past immediately. This uploads via the Git Data API instead (blob → tree → commit →
+  // ref), which accepts files up to 100MB — the same multi-step flow `git push` does internally.
+  async function ghPutLarge(path, contentBase64, message){
+    const cfg = apiBase();
+    const ref = await ghApi('GET', `git/ref/heads/${cfg.branch}`);
+    const parentCommitSha = ref.object.sha;
+    const parentCommit = await ghApi('GET', `git/commits/${parentCommitSha}`);
+    const blob = await ghApi('POST', 'git/blobs', { content: contentBase64, encoding: 'base64' });
+    const tree = await ghApi('POST', 'git/trees', {
+      base_tree: parentCommit.tree.sha,
+      tree: [{ path, mode: '100644', type: 'blob', sha: blob.sha }]
+    });
+    const commit = await ghApi('POST', 'git/commits', {
+      message,
+      tree: tree.sha,
+      parents: [parentCommitSha]
+    });
+    await ghApi('PATCH', `git/refs/heads/${cfg.branch}`, { sha: commit.sha });
+    return { content: { sha: blob.sha } };
+  }
+
   async function loadContentJson(){
     const file = await ghGet('data/content.json');
     if(!file){
@@ -244,6 +297,22 @@
   async function saveContentJson(dataObj, sha, message){
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj, null, 2))));
     return ghPut('data/content.json', encoded, message, sha);
+  }
+
+  // content.json can change between when we load it and when we save (e.g. an upload still
+  // in flight in another tab), which GitHub rejects with a 409. Reload + reapply and retry.
+  async function updateContentJson(mutate, message, attempts = 3){
+    for(let i = 0; i < attempts; i++){
+      const { data, _sha } = await loadContentJson();
+      const result = mutate(data);
+      try{
+        await saveContentJson(data, _sha, message);
+        return result;
+      } catch(err){
+        if(i === attempts - 1 || !/409/.test(err.message)) throw err;
+        log('content.json changed since it was loaded — retrying save…', 'err');
+      }
+    }
   }
 
   function slugify(str){
@@ -320,6 +389,8 @@
   // raw bytes by ~1.37x, so anything above ~700KB raw can tip over that limit — round
   // trip failures like this are expensive, so we shrink proactively before uploading.
   const SAFE_RAW_BYTES = 700_000;
+  // The Git Data API (used for video) tops out around 100MB per blob.
+  const MAX_VIDEO_BYTES = 90_000_000;
   const COMPRESSION_STEPS = [
     { maxDim: 2400, quality: 0.85 },
     { maxDim: 1800, quality: 0.75 },
@@ -396,6 +467,7 @@
             <input type="text" class="edit-name-en" value="${(sec.name.en||'').replace(/"/g,'&quot;')}">
             <button class="save-name">Save name</button>
             <label style="margin-top:22px;">Existing files</label>
+            <p class="hint" style="margin-top:0;">Drag thumbnails to reorder — this changes the order shown on the live site.</p>
             <div class="media-list"></div>
             <label style="margin-top:18px;">Add more files to this section</label>
             <input type="file" class="add-files" multiple accept="image/*,video/*">
@@ -438,13 +510,45 @@
       const sec = data.categories[category].sections.find(s => s.id === sectionId);
       container.innerHTML = '';
       if(!sec.media.length){ container.innerHTML = '<p class="hint">No files in this section yet.</p>'; return; }
+      const grid = document.createElement('div');
+      grid.className = 'media-grid';
       sec.media.forEach((m, idx) => {
-        const row = document.createElement('div');
-        row.className = 'media-row';
-        row.innerHTML = `<span class="path">${m.type.toUpperCase()} · ${m.orientation} · ${m.path}</span><button class="secondary">Remove</button>`;
-        row.querySelector('button').addEventListener('click', () => removeMediaItem(category, sectionId, idx, itemEl));
-        container.appendChild(row);
+        const thumb = document.createElement('div');
+        thumb.className = 'media-thumb';
+        thumb.title = m.path;
+        thumb.draggable = true;
+        thumb.dataset.idx = idx;
+        const mediaEl = m.type === 'video'
+          ? `<video src="${m.path}#t=0.1" muted playsinline preload="metadata"></video>`
+          : `<img src="${m.path}" alt="" loading="lazy">`;
+        thumb.innerHTML = `
+          ${mediaEl}
+          <span class="thumb-tag">${m.type} · ${m.orientation}</span>
+          <button type="button" class="remove-media" title="Remove file">&times;</button>
+        `;
+        thumb.querySelector('.remove-media').addEventListener('click', () => removeMediaItem(category, sectionId, idx, itemEl));
+        thumb.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', String(idx));
+          e.dataTransfer.effectAllowed = 'move';
+          thumb.classList.add('dragging');
+        });
+        thumb.addEventListener('dragend', () => thumb.classList.remove('dragging'));
+        thumb.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          thumb.classList.add('drag-over');
+        });
+        thumb.addEventListener('dragleave', () => thumb.classList.remove('drag-over'));
+        thumb.addEventListener('drop', (e) => {
+          e.preventDefault();
+          thumb.classList.remove('drag-over');
+          const fromIdx = Number(e.dataTransfer.getData('text/plain'));
+          const toIdx = Number(thumb.dataset.idx);
+          if(fromIdx !== toIdx) moveMediaItem(category, sectionId, fromIdx, toIdx, itemEl);
+        });
+        grid.appendChild(thumb);
       });
+      container.appendChild(grid);
     } catch(err){
       container.innerHTML = '';
       log(err.message, 'err');
@@ -454,10 +558,10 @@
   async function renameSection(category, sectionId, nameFr, nameEn){
     if(!nameFr){ alert('French name cannot be empty.'); return; }
     try{
-      const { data, _sha } = await loadContentJson();
-      const sec = data.categories[category].sections.find(s => s.id === sectionId);
-      sec.name = { fr: nameFr, en: nameEn || nameFr };
-      await saveContentJson(data, _sha, `Rename section ${sectionId}`);
+      await updateContentJson((data) => {
+        const sec = data.categories[category].sections.find(s => s.id === sectionId);
+        sec.name = { fr: nameFr, en: nameEn || nameFr };
+      }, `Rename section ${sectionId}`);
       log(`Section renamed to "${nameFr}".`, 'ok');
       $('loadSections').click();
     } catch(err){
@@ -468,21 +572,83 @@
   async function removeMediaItem(category, sectionId, mediaIndex, itemEl){
     if(!confirm('Remove this file from the section? The file itself will also be deleted from the repo.')) return;
     try{
-      const { data, _sha } = await loadContentJson();
-      const sec = data.categories[category].sections.find(s => s.id === sectionId);
-      const [removed] = sec.media.splice(mediaIndex, 1);
+      const removed = await updateContentJson((data) => {
+        const sec = data.categories[category].sections.find(s => s.id === sectionId);
+        return sec.media.splice(mediaIndex, 1)[0];
+      }, `Remove media from section ${sectionId}`);
       try{
         if(removed.sha) await ghDelete(removed.path, removed.sha, `Remove file from ${sectionId}`);
       } catch(fileErr){
         log(`Warning: could not delete file from repo (${fileErr.message}) — removed from listing anyway.`, 'err');
       }
-      await saveContentJson(data, _sha, `Remove media from section ${sectionId}`);
       log('File removed.', 'ok');
       renderMediaList(itemEl, category, sectionId);
       $('loadSections').click();
     } catch(err){
       log(err.message, 'err');
     }
+  }
+
+  async function moveMediaItem(category, sectionId, fromIndex, toIndex, itemEl){
+    try{
+      await updateContentJson((data) => {
+        const sec = data.categories[category].sections.find(s => s.id === sectionId);
+        const [moved] = sec.media.splice(fromIndex, 1);
+        sec.media.splice(toIndex, 0, moved);
+      }, `Reorder media in section ${sectionId}`);
+      renderMediaList(itemEl, category, sectionId);
+      $('loadSections').click();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  // Compresses/routes a single file to the right GitHub upload path and returns its
+  // final repo path + blob sha. Shared by "add new section" and "add more files".
+  async function uploadMediaEntry(rawFile, type, folder, category, sectionId){
+    let file = rawFile;
+    if(type === 'video'){
+      if(rawFile.size > MAX_VIDEO_BYTES){
+        throw new Error(`${rawFile.name} is ${(rawFile.size/1_000_000).toFixed(0)}MB — videos must be under ${MAX_VIDEO_BYTES/1_000_000}MB. Compress or trim it before uploading.`);
+      }
+    } else if(rawFile.size > SAFE_RAW_BYTES){
+      log(`Compressing ${rawFile.name} (${(rawFile.size/1_000_000).toFixed(2)}MB)…`);
+      file = await shrinkUntilSafe(rawFile);
+      log(`Compressed to ${(file.size/1_000_000).toFixed(2)}MB`, 'ok');
+    }
+
+    const ext = file.name.split('.').pop();
+    const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+    const path = `${folder}/${category}/${sectionId}/${cleanName}`;
+    const message = `Add ${rawFile.name} to ${category}/${sectionId}`;
+
+    log(`Reading ${file.name}…`);
+    let base64 = await fileToBase64(file);
+    log(`Uploading ${rawFile.name} → ${path}…${type === 'video' ? ' (this can take a while for video)' : ''}`);
+
+    let result;
+    if(type === 'video'){
+      result = await ghPutLarge(path, base64, message);
+    } else {
+      try{
+        result = await ghPut(path, base64, message);
+      } catch(err){
+        if(!/too large/i.test(err.message)) throw err;
+        log(`Still too large — recompressing ${rawFile.name} harder…`, 'err');
+        const hardest = COMPRESSION_STEPS[COMPRESSION_STEPS.length - 1];
+        file = await compressImage(rawFile, hardest.maxDim, hardest.quality);
+        base64 = await fileToBase64(file);
+        try{
+          result = await ghPut(path, base64, message);
+        } catch(retryErr){
+          if(!/too large/i.test(retryErr.message)) throw retryErr;
+          log('Still too large for the Contents API — using the large-file upload path…', 'err');
+          result = await ghPutLarge(path, base64, message);
+        }
+      }
+    }
+    log(`Uploaded ${rawFile.name}`, 'ok');
+    return { path, sha: result.content.sha };
   }
 
   async function appendFilesToSection(category, sectionId, files, itemEl, filePicker){
@@ -494,38 +660,14 @@
       for(const rawFile of files){
         const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(rawFile);
         const type = rawFile.type.startsWith('video/') ? 'video' : 'photo';
-        let file = rawFile;
-        if(type === 'photo' && rawFile.size > SAFE_RAW_BYTES){
-          log(`Compressing ${rawFile.name} (${(rawFile.size/1_000_000).toFixed(2)}MB)…`);
-          file = await shrinkUntilSafe(rawFile);
-          log(`Compressed to ${(file.size/1_000_000).toFixed(2)}MB`, 'ok');
-        }
-        log(`Reading ${file.name}…`);
-        let base64 = await fileToBase64(file);
-        const ext = file.name.split('.').pop();
-        const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
         const folder = type === 'video' ? 'video' : 'images';
-        const path = `${folder}/${category}/${sectionId}/${cleanName}`;
-        log(`Uploading ${rawFile.name} → ${path}…`);
-        const message = `Add ${rawFile.name} to ${category}/${sectionId}`;
-        let result;
-        try{
-          result = await ghPut(path, base64, message);
-        } catch(err){
-          if(type !== 'photo' || !/too large/i.test(err.message)) throw err;
-          log(`Still too large — recompressing ${rawFile.name} harder…`, 'err');
-          const hardest = COMPRESSION_STEPS[COMPRESSION_STEPS.length - 1];
-          file = await compressImage(rawFile, hardest.maxDim, hardest.quality);
-          base64 = await fileToBase64(file);
-          result = await ghPut(path, base64, message);
-        }
-        mediaEntries.push({ type, orientation, path, sha: result.content.sha });
-        log(`Uploaded ${rawFile.name}`, 'ok');
+        const { path, sha } = await uploadMediaEntry(rawFile, type, folder, category, sectionId);
+        mediaEntries.push({ type, orientation, path, sha });
       }
-      const { data, _sha } = await loadContentJson();
-      const sec = data.categories[category].sections.find(s => s.id === sectionId);
-      sec.media.push(...mediaEntries);
-      await saveContentJson(data, _sha, `Add ${mediaEntries.length} file(s) to section ${sectionId}`);
+      await updateContentJson((data) => {
+        const sec = data.categories[category].sections.find(s => s.id === sectionId);
+        sec.media.push(...mediaEntries);
+      }, `Add ${mediaEntries.length} file(s) to section ${sectionId}`);
       log(`${mediaEntries.length} file(s) added to section.`, 'ok');
       filePicker.clear();
       renderMediaList(itemEl, category, sectionId);
@@ -540,9 +682,9 @@
   async function deleteSection(category, sectionId){
     if(!confirm('Delete this section from the live site? (Uploaded files stay in the repo — only the listing is removed. You can delete files manually in GitHub if needed.)')) return;
     try{
-      const { data, _sha } = await loadContentJson();
-      data.categories[category].sections = data.categories[category].sections.filter(s => s.id !== sectionId);
-      await saveContentJson(data, _sha, `Remove section ${sectionId} from ${category}`);
+      await updateContentJson((data) => {
+        data.categories[category].sections = data.categories[category].sections.filter(s => s.id !== sectionId);
+      }, `Remove section ${sectionId} from ${category}`);
       log(`Section ${sectionId} removed.`, 'ok');
       $('loadSections').click();
     } catch(err){
@@ -573,44 +715,20 @@
       for(const rawFile of files){
         const orientation = category === 'real-estate' ? 'horizontal' : await detectOrientation(rawFile);
         const type = rawFile.type.startsWith('video/') ? 'video' : 'photo';
-        let file = rawFile;
-        if(type === 'photo' && rawFile.size > SAFE_RAW_BYTES){
-          log(`Compressing ${rawFile.name} (${(rawFile.size/1_000_000).toFixed(2)}MB)…`);
-          file = await shrinkUntilSafe(rawFile);
-          log(`Compressed to ${(file.size/1_000_000).toFixed(2)}MB`, 'ok');
-        }
-        log(`Reading ${file.name}…`);
-        let base64 = await fileToBase64(file);
-        const ext = file.name.split('.').pop();
-        const cleanName = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
         const folder = type === 'video' ? 'video' : 'images';
-        const path = `${folder}/${category}/${sectionId}/${cleanName}`;
-        log(`Uploading ${rawFile.name} → ${path}…`);
-        const message = `Add ${rawFile.name} to ${category}/${sectionId}`;
-        let result;
-        try{
-          result = await ghPut(path, base64, message);
-        } catch(err){
-          if(type !== 'photo' || !/too large/i.test(err.message)) throw err;
-          log(`Still too large — recompressing ${rawFile.name} harder…`, 'err');
-          const hardest = COMPRESSION_STEPS[COMPRESSION_STEPS.length - 1];
-          file = await compressImage(rawFile, hardest.maxDim, hardest.quality);
-          base64 = await fileToBase64(file);
-          result = await ghPut(path, base64, message);
-        }
-        mediaEntries.push({ type, orientation, path, sha: result.content.sha });
-        log(`Uploaded ${rawFile.name}`, 'ok');
+        const { path, sha } = await uploadMediaEntry(rawFile, type, folder, category, sectionId);
+        mediaEntries.push({ type, orientation, path, sha });
       }
 
       log('Updating content.json…');
-      const { data, _sha } = await loadContentJson();
-      if(!data.categories[category]) data.categories[category] = { sections: [] };
-      data.categories[category].sections.push({
-        id: sectionId,
-        name: { fr: nameFr, en: nameEn || nameFr },
-        media: mediaEntries
-      });
-      await saveContentJson(data, _sha, `Add section "${nameFr}" to ${category}`);
+      await updateContentJson((data) => {
+        if(!data.categories[category]) data.categories[category] = { sections: [] };
+        data.categories[category].sections.push({
+          id: sectionId,
+          name: { fr: nameFr, en: nameEn || nameFr },
+          media: mediaEntries
+        });
+      }, `Add section "${nameFr}" to ${category}`);
       log(`Section "${nameFr}" published with ${mediaEntries.length} file(s).`, 'ok');
       log('Live site will show it after GitHub Pages redeploys (usually under a minute).', 'ok');
 
