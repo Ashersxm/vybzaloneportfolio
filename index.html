@@ -882,10 +882,12 @@
       }
       .filmstrip {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 14px;
-        align-items: flex-start;
-        --cell-scale: 1;
+      }
+      .filmstrip-row {
+        display: flex;
+        gap: 14px;
       }
       .cell {
         position: relative;
@@ -899,15 +901,41 @@
       .cell:hover video {
         transform: scale(1.04);
       }
-      .cell.horizontal {
-        aspect-ratio: 16/9;
-        flex-basis: calc(498px * var(--cell-scale));
-        height: calc(280px * var(--cell-scale));
+      .filmstrip-pager {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 22px;
       }
-      .cell.portrait {
-        aspect-ratio: 4/5;
-        flex-basis: calc(320px * var(--cell-scale));
-        height: calc(400px * var(--cell-scale));
+      .filmstrip-pager.show {
+        display: flex;
+      }
+      .filmstrip-pager .mono {
+        font-size: 11px;
+        color: var(--paper-dim);
+      }
+      .arrow-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 100px;
+        border: 1px solid var(--line-strong);
+        background: transparent;
+        color: var(--paper);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+      }
+      .arrow-btn:hover:not(:disabled) {
+        background: var(--brass-bright);
+        color: var(--ink);
+        border-color: var(--brass-bright);
+      }
+      .arrow-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
       }
       .cell img,
       .cell video {
@@ -1366,14 +1394,6 @@
         section {
           padding: 90px 6vw;
         }
-        .cell.horizontal {
-          flex-basis: calc(320px * var(--cell-scale));
-          height: calc(180px * var(--cell-scale));
-        }
-        .cell.portrait {
-          flex-basis: calc(224px * var(--cell-scale));
-          height: calc(280px * var(--cell-scale));
-        }
       }
       @media (prefers-reduced-motion: reduce) {
         * {
@@ -1508,6 +1528,15 @@
         </div>
         <div class="section-pills" id="sectionPills"></div>
         <div class="filmstrip" id="filmstrip"></div>
+        <div class="filmstrip-pager" id="filmstripPager">
+          <button class="arrow-btn" id="pagerPrev" aria-label="Previous rows">
+            ←
+          </button>
+          <span class="mono" id="pagerCount">1 / 1</span>
+          <button class="arrow-btn" id="pagerNext" aria-label="Next rows">
+            →
+          </button>
+        </div>
       </div>
     </section>
 
@@ -2032,8 +2061,8 @@
         if (!m) return;
         lightboxStage.innerHTML =
           m.type === 'video'
-            ? `<video src="${m.src}" controls autoplay playsinline></video>`
-            : `<img src="${m.src}" alt="${m.alt || ''}">`;
+            ? `<video src="${m.mediaSrc}" controls autoplay playsinline></video>`
+            : `<img src="${m.mediaSrc}" alt="${m.alt || ''}">`;
         lightboxCount.textContent = `${String(lightboxIndex + 1).padStart(2, '0')} / ${String(currentGalleryMedia.length).padStart(2, '0')}`;
       }
 
@@ -2089,28 +2118,175 @@
       }
 
       function renderRealSection(section) {
-        filmstrip.innerHTML = '';
         currentGalleryMedia = section.media.map((m) => ({
           type: m.type,
-          src: m.path,
+          mediaSrc: m.path,
+          poster: null,
           alt: section.name[lang] || section.name.fr,
+          orientation: m.orientation,
+          footerTag: null,
         }));
-        section.media.forEach((m, i) => {
-          const cell = document.createElement('div');
-          cell.className = `cell ${m.orientation}`;
-          const ratioLabel = m.orientation === 'horizontal' ? '16:9' : '4:5';
-          const mediaEl =
-            m.type === 'video'
-              ? `<video src="${m.path}" muted loop playsinline autoplay></video>`
-              : `<img src="${m.path}" alt="${section.name[lang]} ${i + 1}">`;
-          cell.innerHTML = `
-        <div class="ratio-tag">${m.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
-        ${mediaEl}
-      `;
-          cell.addEventListener('click', () => openLightbox(i));
-          filmstrip.appendChild(cell);
-        });
         galleryCount.textContent = `${section.media.length} ${lang === 'fr' ? 'ÉLÉMENTS' : 'ITEMS'}`;
+      }
+
+      // ---------- Justified, paged filmstrip layout ----------
+      // Packs items into rows of a shared height (like a photo-book contact sheet):
+      // greedily add items to a row at a reference height, and once the next item
+      // would overflow the container width, close the row and rescale its height so
+      // it lands exactly at 100% width. Rows are then paged, 3 at a time, with arrows.
+      const FILMSTRIP_GAP = 14;
+      const FILMSTRIP_REF_HEIGHT = 300;
+      const FILMSTRIP_ROWS_PER_PAGE = 3;
+      let filmstripPages = [];
+      let filmstripPageIndex = 0;
+
+      function aspectRatioFor(orientation) {
+        return orientation === 'horizontal' ? 16 / 9 : 4 / 5;
+      }
+
+      function finalizeFilmstripRow(rowItems, containerWidth, justify) {
+        const gapsTotal = (rowItems.length - 1) * FILMSTRIP_GAP;
+        if (justify) {
+          const sumRatios = rowItems.reduce((s, it) => s + it.ratio, 0);
+          const rowHeight = (containerWidth - gapsTotal) / sumRatios;
+          return {
+            height: rowHeight,
+            items: rowItems.map((it) => ({ ...it, width: rowHeight * it.ratio })),
+          };
+        }
+        const naturalWidth =
+          rowItems.reduce((s, it) => s + it.refWidth, 0) + gapsTotal;
+        const scale =
+          naturalWidth > containerWidth ? containerWidth / naturalWidth : 1;
+        const rowHeight = FILMSTRIP_REF_HEIGHT * scale;
+        return {
+          height: rowHeight,
+          items: rowItems.map((it) => ({ ...it, width: it.refWidth * scale })),
+        };
+      }
+
+      function computeJustifiedRows(items, containerWidth) {
+        const rows = [];
+        let currentRow = [];
+        let currentWidth = 0;
+        items.forEach((item, index) => {
+          const ratio = aspectRatioFor(item.orientation);
+          const refWidth = FILMSTRIP_REF_HEIGHT * ratio;
+          const wouldBeCount = currentRow.length + 1;
+          const wouldBeWidth =
+            currentWidth + refWidth + (wouldBeCount - 1) * FILMSTRIP_GAP;
+          if (currentRow.length > 0 && wouldBeWidth > containerWidth) {
+            rows.push(finalizeFilmstripRow(currentRow, containerWidth, true));
+            currentRow = [];
+            currentWidth = 0;
+          }
+          currentRow.push({ ...item, index, ratio, refWidth });
+          currentWidth += refWidth;
+        });
+        if (currentRow.length) {
+          rows.push(finalizeFilmstripRow(currentRow, containerWidth, false));
+        }
+        return rows;
+      }
+
+      function filmstripCellHtml(item) {
+        const ratioLabel = item.orientation === 'horizontal' ? '16:9' : '4:5';
+        const posterAttr = item.poster ? ` poster="${item.poster}"` : '';
+        const mediaEl =
+          item.type === 'video'
+            ? `<video src="${item.mediaSrc}"${posterAttr} muted loop playsinline autoplay></video>`
+            : `<img src="${item.mediaSrc}" alt="${item.alt || ''}">`;
+        return `
+          <div class="ratio-tag">${item.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
+          ${mediaEl}
+          ${item.footerTag ? `<div class="tag">${item.footerTag}</div>` : ''}
+        `;
+      }
+
+      function renderFilmstripPage() {
+        filmstrip.innerHTML = '';
+        const page = filmstripPages[filmstripPageIndex] || [];
+        page.forEach((row) => {
+          const rowEl = document.createElement('div');
+          rowEl.className = 'filmstrip-row';
+          rowEl.style.height = `${row.height}px`;
+          row.items.forEach((item) => {
+            const cell = document.createElement('div');
+            cell.className = `cell ${item.orientation}`;
+            cell.style.width = `${item.width}px`;
+            cell.style.height = `${row.height}px`;
+            cell.innerHTML = filmstripCellHtml(item);
+            cell.addEventListener('click', () => openLightbox(item.index));
+            rowEl.appendChild(cell);
+          });
+          filmstrip.appendChild(rowEl);
+        });
+
+        const pager = document.getElementById('filmstripPager');
+        const pagerCount = document.getElementById('pagerCount');
+        const pagerPrev = document.getElementById('pagerPrev');
+        const pagerNext = document.getElementById('pagerNext');
+        if (filmstripPages.length > 1) {
+          pager.classList.add('show');
+          pagerCount.textContent = `${filmstripPageIndex + 1} / ${filmstripPages.length}`;
+          pagerPrev.disabled = filmstripPageIndex === 0;
+          pagerNext.disabled = filmstripPageIndex === filmstripPages.length - 1;
+        } else {
+          pager.classList.remove('show');
+        }
+      }
+
+      function layoutFilmstrip() {
+        const containerWidth = filmstrip.clientWidth || 1200;
+        const rows = computeJustifiedRows(currentGalleryMedia, containerWidth);
+        filmstripPages = [];
+        for (let i = 0; i < rows.length; i += FILMSTRIP_ROWS_PER_PAGE) {
+          filmstripPages.push(rows.slice(i, i + FILMSTRIP_ROWS_PER_PAGE));
+        }
+        filmstripPageIndex = 0;
+        renderFilmstripPage();
+      }
+
+      document.getElementById('pagerPrev').addEventListener('click', () => {
+        if (filmstripPageIndex > 0) {
+          filmstripPageIndex -= 1;
+          renderFilmstripPage();
+        }
+      });
+      document.getElementById('pagerNext').addEventListener('click', () => {
+        if (filmstripPageIndex < filmstripPages.length - 1) {
+          filmstripPageIndex += 1;
+          renderFilmstripPage();
+        }
+      });
+
+      let filmstripResizeTimer = null;
+      window.addEventListener('resize', () => {
+        if (!galleryWrap.classList.contains('show')) return;
+        clearTimeout(filmstripResizeTimer);
+        filmstripResizeTimer = setTimeout(layoutFilmstrip, 200);
+      });
+
+      function renderPlaceholderSection(c) {
+        const shots = 8;
+        galleryCount.textContent = `${shots} ${lang === 'fr' ? 'ÉLÉMENTS' : 'ITEMS'}`;
+        currentGalleryMedia = [];
+        for (let i = 1; i <= shots; i++) {
+          const plan = mediaPlanFor(c.id, i);
+          const w = plan.orientation === 'horizontal' ? 800 : 500;
+          const h = plan.orientation === 'horizontal' ? 450 : 800;
+          const posterSrc = `https://picsum.photos/seed/${c.seed}${i}/${w}/${h}`;
+          let typeLabel = 'PHOTO';
+          if (plan.type === 'video') typeLabel = lang === 'fr' ? 'VIDÉO' : 'VIDEO';
+          currentGalleryMedia.push({
+            type: plan.type,
+            mediaSrc: plan.type === 'video' ? VIDEO_SAMPLE : posterSrc,
+            poster: plan.type === 'video' ? posterSrc : null,
+            alt: `${c.label[lang]} still ${i}`,
+            orientation: plan.orientation,
+            footerTag: `<span>${typeLabel}</span><span>${c.label[lang].toUpperCase()}_0${i}</span>`,
+          });
+        }
       }
 
       function renderSectionPills() {
@@ -2130,6 +2306,7 @@
             galleryName.textContent = sec.name[lang] || sec.name.fr;
             renderRealSection(sec);
             renderSectionPills();
+            layoutFilmstrip();
           });
           sectionPills.appendChild(btn);
         });
@@ -2161,33 +2338,6 @@
         return { orientation, type };
       }
 
-      // Shrinks the filmstrip's cell size as a section gets fuller, so it settles into
-      // roughly 2-3 rows instead of scrolling forever — clients can scan it at a glance.
-      function applyFilmstripScale() {
-        const count = filmstrip.children.length;
-        if (!count) return;
-        const horizCount =
-          filmstrip.querySelectorAll('.cell.horizontal').length;
-        const portraitCount = count - horizCount;
-        const isMobile = window.innerWidth <= 860;
-        const baseHoriz = isMobile ? 320 : 498;
-        const basePortrait = isMobile ? 224 : 320;
-        const avgBaseWidth =
-          (horizCount * baseHoriz + portraitCount * basePortrait) / count;
-        const gap = 14;
-        const targetRows = count <= 4 ? 1 : count <= 9 ? 2 : 3;
-        const perRow = Math.ceil(count / targetRows);
-        const containerWidth = filmstrip.clientWidth || 1200;
-        const scale = Math.min(
-          1,
-          Math.max(
-            0.32,
-            (containerWidth - (perRow - 1) * gap) / (perRow * avgBaseWidth),
-          ),
-        );
-        filmstrip.style.setProperty('--cell-scale', scale.toFixed(3));
-      }
-
       function openGallery(c, { scroll = true } = {}) {
         activeCategory = c;
         document
@@ -2206,40 +2356,11 @@
           sectionPills.classList.remove('show');
           sectionPills.innerHTML = '';
           galleryName.textContent = c.label[lang];
-          filmstrip.innerHTML = '';
-          const shots = 8;
-          galleryCount.textContent = `${shots} ${lang === 'fr' ? 'ÉLÉMENTS' : 'ITEMS'}`;
-          currentGalleryMedia = [];
-          for (let i = 1; i <= shots; i++) {
-            const plan = mediaPlanFor(c.id, i);
-            const cell = document.createElement('div');
-            cell.className = `cell ${plan.orientation}`;
-            const ratioLabel =
-              plan.orientation === 'horizontal' ? '16:9' : '4:5';
-            const w = plan.orientation === 'horizontal' ? 800 : 500;
-            const h = plan.orientation === 'horizontal' ? 450 : 800;
-            const src = `https://picsum.photos/seed/${c.seed}${i}/${w}/${h}`;
-            const mediaEl =
-              plan.type === 'video'
-                ? `<video src="${VIDEO_SAMPLE}" poster="${src}" muted loop playsinline autoplay></video>`
-                : `<img src="${src}" alt="${c.label[lang]} still ${i}">`;
-            cell.innerHTML = `
-          <div class="ratio-tag">${plan.type === 'video' ? '<span class="rec-dot"></span>' : ''}${ratioLabel}</div>
-          ${mediaEl}
-          <div class="tag"><span>${plan.type === 'video' ? (lang === 'fr' ? 'VIDÉO' : 'VIDEO') : lang === 'fr' ? 'PHOTO' : 'PHOTO'}</span><span>${c.label[lang].toUpperCase()}_0${i}</span></div>
-        `;
-            const mediaIndex = currentGalleryMedia.length;
-            currentGalleryMedia.push({
-              type: plan.type,
-              src: plan.type === 'video' ? VIDEO_SAMPLE : src,
-              alt: `${c.label[lang]} still ${i}`,
-            });
-            cell.addEventListener('click', () => openLightbox(mediaIndex));
-            filmstrip.appendChild(cell);
-          }
+          renderPlaceholderSection(c);
         }
 
         galleryWrap.classList.add('show');
+        layoutFilmstrip();
         if (scroll) {
           galleryWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
