@@ -805,7 +805,29 @@
       ]
     },
     "model": {
-      "sections": []
+      "sections": [
+        {
+          "id": "urban-ventures-b3y8",
+          "name": {
+            "fr": "Urban Ventures",
+            "en": "Urban Ventures"
+          },
+          "media": [
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/model/urban-ventures-b3y8/1783376924008-iue5b.jpg",
+              "sha": "89f6948de8ef1a5d143b08ee05aa0b02c2541159"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/model/urban-ventures-b3y8/1783376925939-fuid9.jpg",
+              "sha": "6554927fc6ead3719a77f8334ad76fb67132e0ed"
+            }
+          ]
+        }
+      ]
     },
     "drone": {
       "sections": []
