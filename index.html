@@ -1276,7 +1276,7 @@
         <img src="assets/images/logo.png" alt="Vybz Alone Logo" />
       </a>
       <nav class="links">
-        <a href="#work" data-i18n="nav.work">Travaux</a>
+        <a href="#work" data-i18n="nav.work">Portfolio</a>
         <a href="#approach" data-i18n="nav.approach">Approche</a>
         <a href="#contact" data-i18n="nav.contact">Contact</a>
         <button
@@ -1291,7 +1291,7 @@
     </header>
 
     <div class="mobile-panel" id="mobilePanel">
-      <a href="#work" data-i18n="nav.work">Travaux</a>
+      <a href="#work" data-i18n="nav.work">Portfolio</a>
       <a href="#approach" data-i18n="nav.approach">Approche</a>
       <a href="#contact" data-i18n="nav.contact">Contact</a>
       <button
@@ -1368,8 +1368,9 @@
       <div class="section-head reveal">
         <h2 data-i18n="work.title">Six domaines. Une seule exigence.</h2>
         <p data-i18n="work.subtitle">
-          Sélectionnez une catégorie pour ouvrir la galerie. Travaux
-          commerciaux, éditoriaux et aériens réalisés dans le sud de la France.
+          Découvrez une sélection de projets en photographie, vidéo et drone
+          réalisés pour des marques, des entreprises et des événements en France
+          et à l’international.
         </p>
       </div>
 
@@ -1568,7 +1569,7 @@
 
     <footer>
       <span class="mono" data-i18n="footer.left"
-        >© 2026 VYBZ ALONE — TOUS LES TRAVAUX TOURNÉS SUR SITE</span
+        >© 2026 VYBZ ALONE — PHOTOGRAPHIE · VIDÉO · DRONE</span
       >
       <button class="back-top" id="backTop" aria-label="Back to top">↑</button>
       <span class="mono" data-i18n="footer.right"
@@ -1632,115 +1633,176 @@
 
       const translations = {
         fr: {
-          'nav.work': 'Travaux',
+          // Navigation
+          'nav.work': 'Portfolio',
           'nav.approach': 'Approche',
           'nav.contact': 'Contact',
+
+          // Hero
           'hero.eyebrow':
-            'MONTPELLIER · LYON · SUD DE LA FRANCE — DISPONIBLE POUR MISSION',
+            'SUD DE LA FRANCE · EUROPE · CARAÏBES — DISPONIBLE À L’INTERNATIONAL',
+
           'hero.title':
             'Des images<br>qui racontent<br><em>votre histoire.</em>',
+
           'hero.lede':
-            "Pensées pour captiver. Créées pour convertir. Photographie et vidéographie pour l'immobilier, l'hôtellerie, la beauté et les marques qui ne veulent pas se battre sur le prix. Chaque image est pensée pour vendre ce qu'elle montre.",
-          'hero.cta1': 'Voir le travail →',
-          'hero.cta2': 'Réserver un shoot',
+            "Photographie, vidéographie et drone premium pour les marques, l'immobilier, l'hôtellerie et les événements. Des images pensées pour captiver, inspirer confiance et créer de la valeur.",
+
+          'hero.cta1': 'Voir le portfolio →',
+          'hero.cta2': 'Réserver un projet',
           'hero.scroll': 'DÉFILER',
+
+          // Stats
           'stats.1': 'SPÉCIALITÉS',
           'stats.2': 'DÉLAI MOYEN',
-          'stats.3': 'TOURNÉ SUR PLACE',
-          'stats.4': 'CONTACT UNIQUE',
+          'stats.3': 'SUR SITE',
+          'stats.4': 'INTERLOCUTEUR UNIQUE',
+
+          // Portfolio
           'work.title': 'Six domaines. Une seule exigence.',
+
           'work.subtitle':
-            'Sélectionnez une catégorie pour ouvrir la galerie. Travaux commerciaux, éditoriaux et aériens réalisés dans le sud de la France.',
-          'approach.title': 'Pourquoi les entreprises choisissent Vybz Alone.',
+            'Découvrez une sélection de projets en photographie, vidéo et drone réalisés pour des marques, des entreprises et des événements.',
+
+          // Approach
+          'approach.title': 'Pourquoi les marques font confiance à Vybz Alone.',
+
           'approach.1.title': 'Fiabilité',
           'approach.1.body':
-            'Les livrables arrivent le jour convenu, au format prêt pour la plateforme visée — sans relance.',
-          'approach.2.title': 'La narration avant tout',
+            'Des livrables livrés dans les délais convenus, prêts à être utilisés sur les plateformes qui comptent.',
+
+          'approach.2.title': 'Une image avec un objectif',
           'approach.2.body':
-            "Chaque shoot est construit autour de ce que le bien, la marque ou l'événement doit communiquer — pas une liste de plans standards.",
-          'approach.3.title': 'Capture complète',
+            "Chaque projet est pensé pour mettre en valeur votre marque, votre bien ou votre événement, au-delà d'une simple belle image.",
+
+          'approach.3.title': 'Photo, vidéo & drone',
           'approach.3.body':
-            'Sol, caméra épaule, stabilisateur et drone avec un seul opérateur — un seul contact, une image cohérente.',
-          'approach.4.title': 'Pensé pour la récurrence',
+            'Une couverture complète avec un seul interlocuteur pour garantir une identité visuelle cohérente.',
+
+          'approach.4.title': 'Pensé pour durer',
           'approach.4.body':
-            'Forfaits par bien, abonnements mensuels et montages de récap conçus pour tourner sur un rythme régulier.',
+            'Des collaborations ponctuelles ou récurrentes adaptées aux entreprises qui souhaitent produire du contenu de manière régulière.',
+
+          // Contact
           'contact.title':
-            'Un bien, un événement, une marque<br><em>à filmer comme il se doit ?</em>',
+            'Un bien, un événement, une marque…<br><em>Prêt à être mis en valeur&nbsp;?</em>',
+
           'contact.copy':
-            'Décrivez votre projet — je réponds personnellement, sous 24 à 48h, avec une proposition claire.',
+            'Parlez-moi de votre projet. Je vous répondrai personnellement sous 24 à 48 heures avec une proposition adaptée à vos besoins.',
+
+          // Form
           'form.name': 'Nom',
           'form.company': 'Entreprise',
           'form.email': 'Email',
           'form.type': 'Type de projet',
           'form.other': 'Autre',
-          'form.message': 'Que souhaitez-vous filmer ?',
+          'form.message': 'Parlez-moi de votre projet',
           'form.submit': 'Envoyer la demande →',
-          'form.note': 'Réponse sous 24-48h.',
+          'form.note': 'Réponse sous 24 à 48 h.',
+
+          // Contact information
           'contact.email': 'Email',
           'contact.instagram': 'Instagram',
-          'contact.based': 'Basé à',
-          'contact.basedValue': 'Sud de la France — disponible en déplacement',
-          'contact.zones': 'Zones desservies',
+
+          'contact.based': 'Basé en',
+          'contact.basedValue':
+            'Sud de la France • Disponible à l’international',
+
+          'contact.zones': "Zones d'intervention",
           'contact.zonesValue':
-            'Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, Londres, Saint-Martin & Sint Maarten',
+            'France • Europe • Caraïbes • Disponible dans le monde entier',
+
+          // Footer
           'footer.left':
-            '© 2026 VYBZ ALONE — TOUS LES TRAVAUX TOURNÉS SUR SITE',
-          'footer.right': 'PHOTOGRAPHIE · VIDÉOGRAPHIE · DRONE',
+            '© 2026 VYBZ ALONE — PHOTOGRAPHIE · VIDÉOGRAPHIE · DRONE',
+
+          'footer.right':
+            'DISPONIBLE POUR LES PROJETS EN FRANCE ET À L’INTERNATIONAL',
         },
+
         en: {
-          'nav.work': 'Work',
+          // Navigation
+          'nav.work': 'Portfolio',
           'nav.approach': 'Approach',
           'nav.contact': 'Contact',
+
+          // Hero
           'hero.eyebrow':
-            'MONTPELLIER · LYON · SOUTH OF FRANCE — AVAILABLE FOR COMMISSION',
-          'hero.title': 'Visual<br>stories,<br><em>shot with intent.</em>',
+            'SOUTH OF FRANCE · EUROPE · CARIBBEAN — AVAILABLE WORLDWIDE',
+
+          'hero.title': 'Images<br>that tell<br><em>your story.</em>',
+
           'hero.lede':
-            "Photography and videography for real estate, hospitality, beauty, and brands that don't compete on price. Every frame is built to sell the thing behind it.",
-          'hero.cta1': 'View the work →',
-          'hero.cta2': 'Book a shoot',
+            'Premium photography, videography and drone services for brands, real estate, hospitality and events. Images crafted to captivate, build trust and create value.',
+
+          'hero.cta1': 'View Portfolio →',
+          'hero.cta2': 'Book a Project',
           'hero.scroll': 'SCROLL',
+
+          // Stats
           'stats.1': 'SPECIALTIES',
           'stats.2': 'AVG. TURNAROUND',
-          'stats.3': 'SHOT ON LOCATION',
-          'stats.4': 'SINGLE CONTACT',
-          'work.title': 'Six domains. One standard.',
+          'stats.3': 'ON LOCATION',
+          'stats.4': 'SINGLE POINT OF CONTACT',
+
+          // Portfolio
+          'work.title': 'Six specialties. One standard.',
+
           'work.subtitle':
-            'Select a category to open its reel. Portfolio spans commercial, editorial, and aerial work across the south of France.',
-          'approach.title':
-            'Why businesses choose Vybz Alone over the alternative.',
-          'approach.1.title': 'Reliability',
+            'Explore a curated selection of photography, videography and drone projects created for brands, businesses and events.',
+
+          // Approach
+          'approach.title': 'Why brands trust Vybz Alone.',
+
+          'approach.1.title': 'Reliable Delivery',
           'approach.1.body':
-            "Deliverables land on the day agreed, formatted for the platform they'll actually run on — no chasing.",
-          'approach.2.title': 'Storytelling first',
+            'Content delivered on time, optimized and ready to publish.',
+
+          'approach.2.title': 'Purpose-Driven Imagery',
           'approach.2.body':
-            'Every shoot is built around what the property, brand, or event needs to communicate — not a stock shot list.',
-          'approach.3.title': 'Full stack capture',
+            'Every project is designed to communicate the value of your brand, property or event—not simply to create beautiful images.',
+
+          'approach.3.title': 'Photo, Video & Drone',
           'approach.3.body':
-            'Ground, handheld, gimbal, and drone under one shooter — one point of contact, one consistent look.',
-          'approach.4.title': 'Built for repeat work',
+            'Complete visual production through a single creative partner for a consistent visual identity.',
+
+          'approach.4.title': 'Built for Long-Term Partnerships',
           'approach.4.body':
-            'Listing packages, monthly retainers, and recap edits designed to run on a schedule, not a one-off basis.',
+            'Flexible packages for one-off projects or recurring content production.',
+
+          // Contact
           'contact.title':
-            'Have a property, event, or brand<br><em>worth shooting properly?</em>',
+            'A property, an event, a brand…<br><em>Ready to stand out?</em>',
+
           'contact.copy':
-            'Describe your project — I reply personally, within 24-48h, with a clear proposal.',
+            "Tell me about your project. I'll personally get back to you within 24–48 hours with a tailored proposal.",
+
+          // Form
           'form.name': 'Name',
-          'form.company': 'Business / Company',
+          'form.company': 'Company',
           'form.email': 'Email',
-          'form.type': 'Project type',
+          'form.type': 'Project Type',
           'form.other': 'Other',
-          'form.message': 'What are you looking to shoot?',
-          'form.submit': 'Send inquiry →',
-          'form.note': 'Replies within 24-48h.',
+          'form.message': 'Tell me about your project',
+          'form.submit': 'Send Inquiry →',
+          'form.note': 'Replies within 24–48 hours.',
+
+          // Contact information
           'contact.email': 'Email',
           'contact.instagram': 'Instagram',
+
           'contact.based': 'Based in',
-          'contact.basedValue': 'South of France — available to travel',
-          'contact.zones': 'Areas served',
+          'contact.basedValue': 'South of France • Available Worldwide',
+
+          'contact.zones': 'Areas Covered',
           'contact.zonesValue':
-            'Montpellier, Lyon, Toulouse, Bordeaux, Paris, Marseille, London, Saint-Martin & Sint Maarten',
-          'footer.left': '© 2026 VYBZ ALONE — ALL WORK SHOT ON LOCATION',
-          'footer.right': 'PHOTOGRAPHY · VIDEOGRAPHY · DRONE',
+            'France • Europe • Caribbean • Available Worldwide',
+
+          // Footer
+          'footer.left':
+            '© 2026 VYBZ ALONE — PHOTOGRAPHY · VIDEOGRAPHY · DRONE',
+
+          'footer.right': 'AVAILABLE FOR COMMISSIONS WORLDWIDE',
         },
       };
       categories.forEach((c) => {
