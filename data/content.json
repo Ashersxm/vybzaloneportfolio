@@ -56,6 +56,18 @@
               "orientation": "horizontal",
               "path": "images/real-estate/villa-casa-nostra-tl1c/1783351640580-40x9p.jpg",
               "sha": "22ddac2ad18822a1aa713350d476e03a949a31af"
+            },
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/real-estate/villa-casa-nostra-tl1c/1783351924600-kzukl.jpg",
+              "sha": "a26d650038452b21325a73510edae65b0e8c7908"
+            },
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/real-estate/villa-casa-nostra-tl1c/1783351927420-aa4mg.jpg",
+              "sha": "5cd2b90a56bb14775c5b2d73310cfe0fe302d1a4"
             }
           ]
         }
