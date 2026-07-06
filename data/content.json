@@ -1,0 +1,92 @@
+{
+  "categories": {
+    "real-estate": {
+      "sections": []
+    },
+    "events": {
+      "sections": []
+    },
+    "beauty": {
+      "sections": [
+        {
+          "id": "yekoh-cosmetics-uose",
+          "name": {
+            "fr": "YEKOH Cosmetics",
+            "en": "YEKOH Cosmetics"
+          },
+          "media": [
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310057263-9e0y3.jpg",
+              "sha": "dac9a7759c21c5822b5561ecf09bbe7e49d63fad"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310063281-pxjn0.jpg",
+              "sha": "f89deacea57ef99107d0ed1b14270b3e4fa3b96e"
+            },
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310067362-qmt3z.jpg",
+              "sha": "91163cf3442534dc393fdbbc801e9dcf0c511a75"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310070428-1mfel.jpg",
+              "sha": "3c677b892e0cc9b71414ba75c3da787a5dbb81df"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310074316-hingo.jpg",
+              "sha": "ff77e8820e9381a461fe7ee83be6ca6986f7f8df"
+            },
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310078644-3rm2h.jpg",
+              "sha": "5d1794f087c42d5b74994d323459f8f21f1b6b69"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310084553-lvhyw.jpg",
+              "sha": "e5fefb8efe76e4fe45a3593348c683bf9efd8b2d"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310091293-do1ib.jpg",
+              "sha": "28a95346e72194e43c4dc75dddef26123ad498c9"
+            },
+            {
+              "type": "photo",
+              "orientation": "horizontal",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310096872-puspd.jpg",
+              "sha": "1e82a1cf12b3291d4a559508de5b281fd41a4568"
+            },
+            {
+              "type": "photo",
+              "orientation": "portrait",
+              "path": "images/beauty/yekoh-cosmetics-uose/1783310104421-lceju.jpg",
+              "sha": "6e44ed59fa54d63b2d74ca2bdab095d932bdc76f"
+            }
+          ]
+        }
+      ]
+    },
+    "model": {
+      "sections": []
+    },
+    "drone": {
+      "sections": []
+    },
+    "corporate": {
+      "sections": []
+    }
+  }
+}
