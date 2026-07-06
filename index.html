@@ -1950,7 +1950,7 @@
         section.media.forEach((m, i) => {
           const cell = document.createElement('div');
           cell.className = `cell ${m.orientation}`;
-          const ratioLabel = m.orientation === 'horizontal' ? '16:9' : '9:16';
+          const ratioLabel = m.orientation === 'horizontal' ? '16:9' : '4:5';
           const mediaEl =
             m.type === 'video'
               ? `<video src="${m.path}" muted loop playsinline autoplay></video>`
@@ -2038,7 +2038,7 @@
             const cell = document.createElement('div');
             cell.className = `cell ${plan.orientation}`;
             const ratioLabel =
-              plan.orientation === 'horizontal' ? '16:9' : '9:16';
+              plan.orientation === 'horizontal' ? '16:9' : '4:5';
             const w = plan.orientation === 'horizontal' ? 800 : 500;
             const h = plan.orientation === 'horizontal' ? 450 : 800;
             const mediaEl =
