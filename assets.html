@@ -18,6 +18,14 @@
   .mono{ font-family:'JetBrains Mono',monospace; }
   h1{ font-size:26px; font-weight:600; margin-bottom:6px; }
   .sub{ color:var(--paper-dim); font-size:13.5px; margin-bottom:36px; }
+  .layout{ display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; }
+  .layout-log{ position:sticky; top:24px; }
+  .log-panel{ background:var(--ink-2); border:1px solid var(--line-strong); border-radius:10px; padding:20px; }
+  .log-panel h2{ font-size:13px; font-weight:600; margin-bottom:14px; }
+  @media (max-width:900px){
+    .layout{ grid-template-columns:1fr; }
+    .layout-log{ position:static; }
+  }
   .card{ background:var(--ink-2); border:1px solid var(--line-strong); border-radius:10px; padding:26px; margin-bottom:24px; }
   .card h2{ font-size:15px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
   .badge{ font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:100px; background:rgba(210,172,102,0.15); color:var(--brass); }
@@ -43,11 +51,26 @@
   .hint{ color:var(--paper-dim); font-size:12px; line-height:1.6; margin-top:8px; }
   .log{
     font-family:'JetBrains Mono',monospace; font-size:12px; background:rgba(0,0,0,0.3); border:1px solid var(--line);
-    border-radius:6px; padding:14px; max-height:220px; overflow-y:auto; margin-top:16px; white-space:pre-wrap;
+    border-radius:6px; padding:14px; max-height:calc(100vh - 200px); overflow-y:auto; margin-top:0; white-space:pre-wrap;
     color:var(--paper-dim);
   }
   .log .ok{ color:var(--ok); }
   .log .err{ color:var(--signal); }
+  .toast-stack{
+    position:fixed; bottom:24px; right:24px; z-index:1000;
+    display:flex; flex-direction:column; gap:10px; max-width:340px;
+  }
+  .toast{
+    background:var(--ink-2); border:1px solid var(--line-strong); border-radius:8px;
+    padding:12px 16px; font-size:12.5px; line-height:1.4; color:var(--paper-dim);
+    box-shadow:0 14px 34px -12px rgba(0,0,0,0.65);
+    animation:toast-in 0.22s ease;
+  }
+  .toast.ok{ border-color:var(--ok); color:var(--paper); }
+  .toast.err{ border-color:var(--signal); color:var(--paper); }
+  .toast.fade-out{ animation:toast-out 0.22s ease forwards; }
+  @keyframes toast-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes toast-out{ from{ opacity:1; } to{ opacity:0; transform:translateY(-8px); } }
   .section-item{
     padding:14px 0; border-top:1px solid var(--line);
   }
@@ -107,6 +130,9 @@
 
 <h1>Vybz Alone — Content Manager</h1>
 <p class="sub">Add sections and upload photos/videos to your categories. This page isn't linked from the site — keep the URL private.</p>
+
+<div class="layout">
+<div class="layout-main">
 
 <div class="card" id="setupCard">
   <h2>1. Connect to your GitHub repo <span class="badge">ONE-TIME SETUP</span></h2>
@@ -168,19 +194,45 @@
     No file size limit, so this is the best option for full walkthrough videos.
   </p>
   <button id="uploadBtn">Upload & publish section</button>
-  <div class="log" id="log">Ready.</div>
 </div>
+
+</div>
+
+<aside class="layout-log">
+  <div class="log-panel">
+    <h2>Activity Log</h2>
+    <div class="log" id="log">Ready.</div>
+  </div>
+</aside>
+
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
 
 <script>
   const CFG_KEY = 'vybz_admin_cfg_v1';
   const $ = (id) => document.getElementById(id);
   const logEl = $('log');
+  const toastStack = $('toastStack');
+
+  function showToast(msg, cls){
+    const toast = document.createElement('div');
+    toast.className = `toast ${cls}`;
+    toast.textContent = msg;
+    toastStack.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 250);
+    }, 3500);
+  }
+
   function log(msg, cls){
     const line = document.createElement('div');
     if(cls) line.className = cls;
     line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
     logEl.appendChild(line);
     logEl.scrollTop = logEl.scrollHeight;
+    if(cls === 'ok' || cls === 'err') showToast(msg, cls);
   }
 
   function getConfig(){
@@ -313,7 +365,7 @@
 
   // content.json can change between when we load it and when we save (e.g. an upload still
   // in flight in another tab), which GitHub rejects with a 409. Reload + reapply and retry.
-  async function updateContentJson(mutate, message, attempts = 3){
+  async function updateContentJsonOnce(mutate, message, attempts = 3){
     for(let i = 0; i < attempts; i++){
       const { data, _sha } = await loadContentJson();
       const result = mutate(data);
@@ -325,6 +377,16 @@
         log('content.json changed since it was loaded — retrying save…', 'err');
       }
     }
+  }
+
+  // Two updates racing (e.g. a fast double drag-drop, or two edits within a second of each
+  // other) can each retry against the other's fresh SHA and both exhaust their attempts.
+  // Queue every write so they run one at a time instead of actually running concurrently.
+  let contentJsonQueue = Promise.resolve();
+  function updateContentJson(mutate, message, attempts = 3){
+    const run = contentJsonQueue.then(() => updateContentJsonOnce(mutate, message, attempts));
+    contentJsonQueue = run.catch(() => {});
+    return run;
   }
 
   function slugify(str){
@@ -689,6 +751,7 @@
         const [moved] = sec.media.splice(fromIndex, 1);
         sec.media.splice(toIndex, 0, moved);
       }, `Reorder media in section ${sectionId}`);
+      log('Order updated.', 'ok');
       renderMediaList(itemEl, category, sectionId);
       $('loadSections').click();
     } catch(err){
