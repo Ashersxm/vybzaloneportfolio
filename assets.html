@@ -705,15 +705,58 @@
     }
   }
 
+  // Real Estate uploads always get orientation forced to "horizontal" (so drone/walkthrough
+  // footage stays consistent), regardless of the source file's real shape. That's fine as long
+  // as the section stays in Real Estate — but it goes stale the moment it's moved elsewhere, so
+  // re-check each file's true orientation against the actual image/video when moving away from it.
+  function redetectOrientation(path, type){
+    return new Promise((resolve) => {
+      if(type === 'video'){
+        const v = document.createElement('video');
+        v.preload = 'metadata';
+        v.onloadedmetadata = () => resolve(v.videoWidth >= v.videoHeight ? 'horizontal' : 'portrait');
+        v.onerror = () => resolve(null);
+        v.src = path;
+      } else {
+        const img = new Image();
+        img.onload = () => resolve(img.naturalWidth >= img.naturalHeight ? 'horizontal' : 'portrait');
+        img.onerror = () => resolve(null);
+        img.src = path;
+      }
+    });
+  }
+
   async function moveSectionCategory(fromCategory, toCategory, sectionId){
     if(fromCategory === toCategory) return;
     if(!confirm(`Move this section to "${toCategory}"? It will disappear from "${fromCategory}" and show up under the new category instead.`)) return;
     try{
+      let correctedOrientations = null;
+      if(fromCategory === 'real-estate' && toCategory !== 'real-estate'){
+        const { data } = await loadContentJson();
+        const sec = data.categories[fromCategory].sections.find(s => s.id === sectionId);
+        if(sec){
+          log('Re-checking true orientation for each file (Real Estate forces horizontal)…');
+          const detections = await Promise.all(
+            sec.media
+              .filter(m => m.type !== 'youtube')
+              .map(async (m) => ({ path: m.path, orientation: await redetectOrientation(m.path, m.type) }))
+          );
+          correctedOrientations = {};
+          detections.forEach(({ path, orientation }) => {
+            if(orientation) correctedOrientations[path] = orientation;
+          });
+        }
+      }
       await updateContentJson((data) => {
         const fromSections = data.categories[fromCategory].sections;
         const idx = fromSections.findIndex(s => s.id === sectionId);
         if(idx === -1) throw new Error('Section not found — it may have already moved.');
         const [moved] = fromSections.splice(idx, 1);
+        if(correctedOrientations){
+          moved.media.forEach((m) => {
+            if(correctedOrientations[m.path]) m.orientation = correctedOrientations[m.path];
+          });
+        }
         if(!data.categories[toCategory]) data.categories[toCategory] = { sections: [] };
         data.categories[toCategory].sections.push(moved);
       }, `Move section ${sectionId} from ${fromCategory} to ${toCategory}`);
