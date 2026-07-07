@@ -12,7 +12,7 @@
     </title>
     <meta
       name="description"
-      content="Vybz Alone — photographe et vidéographe premium pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres."
+      content="Vybz Alone — photographe et vidéographe pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres."
     />
     <meta
       name="keywords"
@@ -36,11 +36,11 @@
     />
     <meta
       property="og:description"
-      content="Photographie et vidéographie premium pour l'immobilier, l'hôtellerie, la beauté et les marques. Sud de la France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · Londres."
+      content="Photographie et vidéographie pour l'immobilier, l'hôtellerie, la beauté et les marques. Sud de la France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · Londres."
     />
     <meta
       property="og:image"
-      content="https://www.vybzalone.com/og-cover.jpg"
+      content="https://www.vybzalone.com/assets/images/logo.png"
     />
     <meta property="og:url" content="https://www.vybzalone.com/" />
     <meta property="og:locale" content="fr_FR" />
@@ -54,11 +54,11 @@
     />
     <meta
       name="twitter:description"
-      content="Premium photography & videography for real estate, hospitality, beauty, and brands. South of France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · London."
+      content="Photography & videography for real estate, hospitality, beauty, and brands. South of France · Montpellier · Lyon · Toulouse · Bordeaux · Paris · Saint-Martin · Sint Maarten · London."
     />
     <meta
       name="twitter:image"
-      content="https://www.vybzalone.com/og-cover.jpg"
+      content="https://www.vybzalone.com/assets/images/logo.png"
     />
 
     <!-- Structured data: LocalBusiness / ProfessionalService with all target service areas -->
@@ -67,8 +67,8 @@
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
         "name": "Vybz Alone",
-        "description": "Photographie et vidéographie premium pour l'immobilier de luxe, l'hôtellerie, les événements, la beauté et les marques.",
-        "image": "https://www.vybzalone.com/og-cover.jpg",
+        "description": "Photographie et vidéographie pour l'immobilier de luxe, l'hôtellerie, les événements, la beauté et les marques.",
+        "image": "https://www.vybzalone.com/assets/images/logo.png",
         "url": "https://www.vybzalone.com/",
         "priceRange": "€€€",
         "address": {
@@ -704,6 +704,139 @@
         line-height: 1.6;
       }
 
+      /* ---------- SERVICES ---------- */
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .service-card {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        background: var(--glass);
+        border: 1px solid var(--line-strong);
+        border-radius: 14px;
+        padding: 28px;
+        transition:
+          border-color 0.3s ease,
+          transform 0.3s ease;
+      }
+      .service-card:hover {
+        border-color: var(--brass-bright);
+        transform: translateY(-4px);
+      }
+      .service-card .tag-mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        color: var(--brass-bright);
+        text-transform: uppercase;
+      }
+      .service-card h3 {
+        font-family: 'Fraunces', serif;
+        font-size: 22px;
+        font-weight: 500;
+      }
+      .service-card .desc {
+        color: var(--paper-dim);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .service-card ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 6px;
+      }
+      .service-card li {
+        font-size: 12.5px;
+        color: var(--paper-dim);
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .service-card li::before {
+        content: '—';
+        color: var(--brass-bright);
+        flex-shrink: 0;
+      }
+      .service-cta {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--paper);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        transition:
+          color 0.2s ease,
+          gap 0.2s ease;
+      }
+      .service-cta:hover {
+        color: var(--brass-bright);
+        gap: 10px;
+      }
+
+      /* ---------- TESTIMONIALS ---------- */
+      .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .testimonial-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: var(--glass);
+        border: 1px solid var(--line-strong);
+        border-radius: 14px;
+        padding: 28px;
+      }
+      .testimonial-card .t-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: var(--ink-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Fraunces', serif;
+        font-size: 17px;
+        color: var(--brass-bright);
+        flex-shrink: 0;
+      }
+      .testimonial-card .t-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .testimonial-card .t-quote {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-size: 16.5px;
+        line-height: 1.55;
+        color: var(--paper);
+        flex-grow: 1;
+      }
+      .testimonial-card .t-name {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11.5px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .testimonial-card .t-role {
+        font-size: 12px;
+        color: var(--paper-dim);
+        margin-top: -12px;
+      }
+
       /* ---------- CATEGORY GRID ---------- */
       .sheet {
         display: grid;
@@ -1148,6 +1281,64 @@
         max-width: 480px;
       }
 
+      /* ---------- ABOUT ---------- */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .about-photo {
+        position: relative;
+        aspect-ratio: 4/5;
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--ink-2);
+        border: 1px solid var(--line-strong);
+      }
+      .about-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .about-photo-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Fraunces', serif;
+        font-size: 42px;
+        color: var(--paper-dim);
+        background: linear-gradient(
+          160deg,
+          rgba(210, 172, 102, 0.08),
+          rgba(255, 255, 255, 0.02)
+        );
+      }
+      .about-copy .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .about-copy h2 {
+        font-family: 'Fraunces', serif;
+        font-weight: 500;
+        font-size: clamp(30px, 3.6vw, 44px);
+        letter-spacing: -0.01em;
+        margin-bottom: 22px;
+      }
+      .about-copy p {
+        color: var(--paper-dim);
+        font-size: 15px;
+        line-height: 1.7;
+        max-width: 540px;
+      }
+      .about-copy p + p {
+        margin-top: 16px;
+      }
+
       /* ---------- CONTACT ---------- */
       .contact-grid {
         display: grid;
@@ -1369,6 +1560,12 @@
         width: auto;
         display: block;
       }
+      @media (max-width: 1024px) {
+        .services-grid,
+        .testimonials-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
       @media (max-width: 860px) {
         nav.links {
           display: none;
@@ -1387,6 +1584,10 @@
         .sheet {
           grid-template-columns: repeat(2, 1fr);
         }
+        .services-grid,
+        .testimonials-grid {
+          grid-template-columns: 1fr;
+        }
         .stats {
           grid-template-columns: repeat(2, 1fr);
         }
@@ -1396,6 +1597,14 @@
         .approach-row {
           grid-template-columns: 1fr;
           gap: 10px;
+        }
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .about-photo {
+          max-width: 320px;
+          margin: 0 auto;
         }
         .contact-grid {
           grid-template-columns: 1fr;
@@ -1526,6 +1735,45 @@
       </div>
     </div>
 
+    <section id="about">
+      <div class="about-grid">
+        <div class="about-photo reveal">
+          <img
+            src=""
+            alt="Brandon — Vybz Alone"
+            id="aboutPhoto"
+            style="display: none"
+          />
+          <div class="about-photo-placeholder" id="aboutPhotoPlaceholder">
+            <span>VA</span>
+          </div>
+        </div>
+        <div class="about-copy reveal">
+          <span class="eyebrow">
+            <span class="rec-dot"></span>
+            <span data-i18n="about.eyebrow"
+              >LA PERSONNE DERRIÈRE L'OBJECTIF</span
+            >
+          </span>
+          <h2 data-i18n="about.title">Bonjour, je suis Brandon.</h2>
+          <p data-i18n="about.body1">
+            J'ai grandi dans l'univers de l'événementiel — mes oncles étaient
+            DJs et ingénieurs du son — avant de me lancer officiellement en
+            janvier 2025. Passionné de technologie, ce qui a commencé comme un
+            simple hobby est devenu une véritable passion professionnelle.
+          </p>
+          <p data-i18n="about.body2">
+            Ce qui me pousse à faire ce métier, c'est l'envie de créer des
+            souvenirs : capturer les instants qu'on chérit, le temps passé
+            ensemble, la beauté d'un paysage, le savoir-faire d'un artisan, ou
+            la joie sur le visage de quelqu'un qui profite pleinement d'un
+            événement que les organisateurs ont mis tant d'énergie à
+            préparer.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section id="work">
       <div class="section-head reveal">
         <h2 data-i18n="work.title">Six domaines. Une seule exigence.</h2>
@@ -1554,6 +1802,156 @@
           <button class="arrow-btn" id="pagerNext" aria-label="Next rows">
             →
           </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="section-head reveal">
+        <h2 data-i18n="services.title">Un forfait clair, poste par poste.</h2>
+        <p data-i18n="services.subtitle">
+          Chaque projet est différent — ces forfaits donnent une base de
+          départ. Contactez-moi pour un devis sur mesure.
+        </p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.real-estate.tag"
+            >BIEN · VISITE VIRTUELLE · DRONE</span
+          >
+          <h3 data-i18n="cat.real-estate.label">Immobilier</h3>
+          <p class="desc" data-i18n="services.real-estate.desc">
+            Un reportage complet pensé pour vendre le bien, pas seulement le
+            documenter — en une seule visite sur place.
+          </p>
+          <ul data-i18n-html="services.real-estate.includes">
+            <li>20 à 30 photos HDR retouchées</li>
+            <li>Captation drone extérieure</li>
+            <li>Vidéo de visite (format court et long)</li>
+            <li>Livraison sous 48h</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="real-estate"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.events.tag"
+            >FILMS RÉCAP · COUVERTURE LIVE</span
+          >
+          <h3 data-i18n="cat.events.label">Événements</h3>
+          <p class="desc" data-i18n="services.events.desc">
+            Couverture live et film récap qui capturent l'énergie de
+            l'événement sans jamais en interrompre le déroulement.
+          </p>
+          <ul data-i18n-html="services.events.includes">
+            <li>Couverture photo complète de l'événement</li>
+            <li>Film récap monté (60 à 90 secondes)</li>
+            <li>Sélection de photos haute résolution</li>
+            <li>Livraison sous 5 jours</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="events"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.beauty.tag"
+            >COMMERCIAL · PRODUIT</span
+          >
+          <h3 data-i18n="cat.beauty.label">Beauté & Cosmétique</h3>
+          <p class="desc" data-i18n="services.beauty.desc">
+            Photographie produit et lifestyle pensée pour la vente en ligne et
+            les réseaux sociaux.
+          </p>
+          <ul data-i18n-html="services.beauty.includes">
+            <li>Packshots studio soignés</li>
+            <li>Mises en scène lifestyle</li>
+            <li>Retouche avancée</li>
+            <li>Formats optimisés réseaux sociaux</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="beauty"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.model.tag"
+            >ÉDITORIAL · PORTRAIT</span
+          >
+          <h3 data-i18n="cat.model.label">Personal Branding</h3>
+          <p class="desc" data-i18n="services.model.desc">
+            Une séance dirigée pour construire une image de marque
+            personnelle forte et cohérente sur tous vos supports.
+          </p>
+          <ul data-i18n-html="services.model.includes">
+            <li>Séance portrait dirigée</li>
+            <li>Plusieurs tenues et décors</li>
+            <li>Retouche professionnelle</li>
+            <li>Formats prêts pour LinkedIn et réseaux</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="model"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.drone.tag"
+            >AÉRIEN · PLANS D'ÉTABLISSEMENT</span
+          >
+          <h3 data-i18n="cat.drone.label">Drone</h3>
+          <p class="desc" data-i18n="services.drone.desc">
+            Captation aérienne pour sublimer un lieu, un événement ou un
+            projet — seule ou en complément d'un autre service.
+          </p>
+          <ul data-i18n-html="services.drone.includes">
+            <li>Pilote certifié</li>
+            <li>Photos et vidéos en 4K</li>
+            <li>Plans d'établissement et suivis</li>
+            <li>Livraison rapide</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="drone"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
+        </div>
+        <div class="service-card reveal">
+          <span class="tag-mono" data-i18n="cat.corporate.tag"
+            >FILM DE MARQUE · ÉQUIPE · BUREAU</span
+          >
+          <h3 data-i18n="cat.corporate.label">Corporate</h3>
+          <p class="desc" data-i18n="services.corporate.desc">
+            Films de marque, portraits d'équipe et captation de bureau pour
+            humaniser votre entreprise.
+          </p>
+          <ul data-i18n-html="services.corporate.includes">
+            <li>Film de marque court</li>
+            <li>Portraits d'équipe</li>
+            <li>Captation des locaux</li>
+            <li>Direction artistique adaptée à votre identité</li>
+          </ul>
+          <a
+            href="#contact"
+            class="service-cta"
+            data-service="corporate"
+            data-i18n="services.cta"
+            >Réserver ce service →</a
+          >
         </div>
       </div>
     </section>
@@ -1602,6 +2000,13 @@
           </p>
         </div>
       </div>
+    </section>
+
+    <section id="testimonials" style="display: none">
+      <div class="section-head reveal">
+        <h2 data-i18n="testimonials.title">Ce qu'en disent mes clients.</h2>
+      </div>
+      <div class="testimonials-grid" id="testimonialsGrid"></div>
     </section>
 
     <section id="contact" style="border-bottom: none">
@@ -1823,7 +2228,7 @@
             'Des images<br>qui racontent<br><em>votre histoire.</em>',
 
           'hero.lede':
-            "Photographie, vidéographie et drone premium pour les marques, l'immobilier, l'hôtellerie et les événements. Des images pensées pour captiver, inspirer confiance et créer de la valeur.",
+            "Photographie, vidéographie et drone pour les marques, l'immobilier, l'hôtellerie et les événements. Des images pensées pour captiver, inspirer confiance et créer de la valeur.",
 
           'hero.cta1': 'Voir le portfolio →',
           'hero.cta2': 'Réserver un projet',
@@ -1835,11 +2240,58 @@
           'stats.3': 'SUR SITE',
           'stats.4': 'INTERLOCUTEUR UNIQUE',
 
+          // About
+          'about.eyebrow': "LA PERSONNE DERRIÈRE L'OBJECTIF",
+          'about.title': 'Bonjour, je suis Brandon.',
+          'about.body1':
+            "J'ai grandi dans l'univers de l'événementiel — mes oncles étaient DJs et ingénieurs du son — avant de me lancer officiellement en janvier 2025. Passionné de technologie, ce qui a commencé comme un simple hobby est devenu une véritable passion professionnelle.",
+          'about.body2':
+            "Ce qui me pousse à faire ce métier, c'est l'envie de créer des souvenirs : capturer les instants qu'on chérit, le temps passé ensemble, la beauté d'un paysage, le savoir-faire d'un artisan, ou la joie sur le visage de quelqu'un qui profite pleinement d'un événement que les organisateurs ont mis tant d'énergie à préparer.",
+
           // Portfolio
           'work.title': 'Six domaines. Une seule exigence.',
 
           'work.subtitle':
             'Découvrez une sélection de projets en photographie, vidéo et drone réalisés pour des marques, des entreprises et des événements.',
+
+          // Services
+          'services.title': 'Un forfait clair, poste par poste.',
+          'services.subtitle':
+            'Chaque projet est différent — ces forfaits donnent une base de départ. Contactez-moi pour un devis sur mesure.',
+          'services.cta': 'Réserver ce service →',
+
+          'services.real-estate.desc':
+            'Un reportage complet pensé pour vendre le bien, pas seulement le documenter — en une seule visite sur place.',
+          'services.real-estate.includes':
+            '<li>20 à 30 photos HDR retouchées</li><li>Captation drone extérieure</li><li>Vidéo de visite (format court et long)</li><li>Livraison sous 48h</li>',
+
+          'services.events.desc':
+            "Couverture live et film récap qui capturent l'énergie de l'événement sans jamais en interrompre le déroulement.",
+          'services.events.includes':
+            "<li>Couverture photo complète de l'événement</li><li>Film récap monté (60 à 90 secondes)</li><li>Sélection de photos haute résolution</li><li>Livraison sous 5 jours</li>",
+
+          'services.beauty.desc':
+            'Photographie produit et lifestyle pensée pour la vente en ligne et les réseaux sociaux.',
+          'services.beauty.includes':
+            '<li>Packshots studio soignés</li><li>Mises en scène lifestyle</li><li>Retouche avancée</li><li>Formats optimisés réseaux sociaux</li>',
+
+          'services.model.desc':
+            'Une séance dirigée pour construire une image de marque personnelle forte et cohérente sur tous vos supports.',
+          'services.model.includes':
+            '<li>Séance portrait dirigée</li><li>Plusieurs tenues et décors</li><li>Retouche professionnelle</li><li>Formats prêts pour LinkedIn et réseaux</li>',
+
+          'services.drone.desc':
+            "Captation aérienne pour sublimer un lieu, un événement ou un projet — seule ou en complément d'un autre service.",
+          'services.drone.includes':
+            "<li>Pilote certifié</li><li>Photos et vidéos en 4K</li><li>Plans d'établissement et suivis</li><li>Livraison rapide</li>",
+
+          'services.corporate.desc':
+            'Films de marque, portraits d\'équipe et captation de bureau pour humaniser votre entreprise.',
+          'services.corporate.includes':
+            '<li>Film de marque court</li><li>Portraits d\'équipe</li><li>Captation des locaux</li><li>Direction artistique adaptée à votre identité</li>',
+
+          // Testimonials
+          'testimonials.title': 'Ce qu\'en disent mes clients.',
 
           // Approach
           'approach.title': 'Pourquoi les marques font confiance à Vybz Alone.',
@@ -1910,7 +2362,7 @@
           'hero.title': 'Images<br>that tell<br><em>your story.</em>',
 
           'hero.lede':
-            'Premium photography, videography and drone services for brands, real estate, hospitality and events. Images crafted to captivate, build trust and create value.',
+            'Photography, videography and drone services for brands, real estate, hospitality and events. Images crafted to captivate, build trust and create value.',
 
           'hero.cta1': 'View Portfolio →',
           'hero.cta2': 'Book a Project',
@@ -1922,11 +2374,58 @@
           'stats.3': 'ON LOCATION',
           'stats.4': 'SINGLE POINT OF CONTACT',
 
+          // About
+          'about.eyebrow': 'THE PERSON BEHIND THE LENS',
+          'about.title': "Hi, I'm Brandon.",
+          'about.body1':
+            "I grew up around the event world — my uncles were DJs and sound engineers — before officially going out on my own in January 2025. As someone who loves technology, what started as a hobby slowly grew into a business I'm genuinely passionate about.",
+          'about.body2':
+            "What drives me is creating memories: capturing the moments we cherish, time spent together, the beauty of nature, the craftsmanship behind a well-made thing, or the joy on someone's face as they enjoy every second of an event organizers worked so hard to bring to life.",
+
           // Portfolio
           'work.title': 'Six specialties. One standard.',
 
           'work.subtitle':
             'Explore a curated selection of photography, videography and drone projects created for brands, businesses and events.',
+
+          // Services
+          'services.title': 'A clear package for every specialty.',
+          'services.subtitle':
+            'Every project is different — these packages are a starting point. Get in touch for a tailored quote.',
+          'services.cta': 'Book this service →',
+
+          'services.real-estate.desc':
+            'A complete shoot built to sell the property, not just document it — all in a single visit.',
+          'services.real-estate.includes':
+            '<li>20-30 retouched HDR photos</li><li>Exterior drone footage</li><li>Walkthrough video (short + long cut)</li><li>Delivered within 48h</li>',
+
+          'services.events.desc':
+            "Live coverage and a recap film that capture the event's energy without ever getting in its way.",
+          'services.events.includes':
+            '<li>Full photo coverage of the event</li><li>Edited recap film (60-90 seconds)</li><li>Curated high-resolution photo set</li><li>Delivered within 5 days</li>',
+
+          'services.beauty.desc':
+            'Product and lifestyle photography built to convert online and drive engagement on social.',
+          'services.beauty.includes':
+            '<li>Clean studio packshots</li><li>Lifestyle staged shots</li><li>Advanced retouching</li><li>Formats optimized for social media</li>',
+
+          'services.model.desc':
+            'A guided session built to create a strong, consistent personal brand image across every platform.',
+          'services.model.includes':
+            '<li>Directed portrait session</li><li>Multiple outfits and settings</li><li>Professional retouching</li><li>Formats ready for LinkedIn and social</li>',
+
+          'services.drone.desc':
+            'Aerial footage to elevate a location, an event or a project — standalone or paired with another service.',
+          'services.drone.includes':
+            '<li>Certified drone pilot</li><li>4K photo and video</li><li>Establishing shots and tracking footage</li><li>Fast turnaround</li>',
+
+          'services.corporate.desc':
+            'Brand films, team portraits and office footage that put a human face on your company.',
+          'services.corporate.includes':
+            '<li>Short brand film</li><li>Team portraits</li><li>Office/workspace footage</li><li>Art direction tailored to your identity</li>',
+
+          // Testimonials
+          'testimonials.title': 'What clients say.',
 
           // Approach
           'approach.title': 'Why brands trust Vybz Alone.',
@@ -1985,6 +2484,8 @@
       categories.forEach((c) => {
         translations.fr[`cat.${c.id}.label`] = c.label.fr;
         translations.en[`cat.${c.id}.label`] = c.label.en;
+        translations.fr[`cat.${c.id}.tag`] = c.tag.fr;
+        translations.en[`cat.${c.id}.tag`] = c.tag.en;
       });
 
       function applyTranslations() {
@@ -2011,8 +2512,8 @@
           metaDesc.setAttribute(
             'content',
             lang === 'fr'
-              ? "Vybz Alone — photographe et vidéographe premium pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres."
-              : 'Vybz Alone — premium photographer and videographer for luxury real estate, hospitality, events, and brands. Based in the south of France, available in Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten, and London.',
+              ? "Vybz Alone — photographe et vidéographe pour l'immobilier de luxe, l'hôtellerie, les événements et les marques. Basé dans le sud de la France, disponible à Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten et Londres."
+              : 'Vybz Alone — photographer and videographer for luxury real estate, hospitality, events, and brands. Based in the south of France, available in Montpellier, Lyon, Toulouse, Bordeaux, Paris, Saint-Martin, Sint Maarten, and London.',
           );
         }
         renderMarquee();
@@ -2057,6 +2558,50 @@
         } catch (err) {
           /* fine — falls back to placeholder demo content */
         }
+      }
+
+      function renderAboutPhoto() {
+        const photo = liveContent && liveContent.about && liveContent.about.photo;
+        const img = document.getElementById('aboutPhoto');
+        const placeholder = document.getElementById('aboutPhotoPlaceholder');
+        if (photo && photo.path) {
+          img.src = photo.path;
+          img.style.display = 'block';
+          placeholder.style.display = 'none';
+        } else {
+          img.style.display = 'none';
+          placeholder.style.display = 'flex';
+        }
+      }
+
+      function renderTestimonials() {
+        const section = document.getElementById('testimonials');
+        const grid = document.getElementById('testimonialsGrid');
+        const testimonials = (liveContent && liveContent.testimonials) || [];
+        if (!testimonials.length) {
+          section.style.display = 'none';
+          return;
+        }
+        grid.innerHTML = '';
+        testimonials.forEach((t) => {
+          const card = document.createElement('div');
+          card.className = 'testimonial-card reveal';
+          const quote = (t.quote && (t.quote[lang] || t.quote.fr)) || '';
+          const avatarEl = t.image
+            ? `<img src="${t.image.path}" alt="${t.name}">`
+            : (t.name || '?').charAt(0).toUpperCase();
+          card.innerHTML = `
+            <div class="t-avatar">${avatarEl}</div>
+            <p class="t-quote">"${quote}"</p>
+            <div class="t-name">${t.name}</div>
+            ${t.role ? `<div class="t-role">${t.role}</div>` : ''}
+          `;
+          grid.appendChild(card);
+        });
+        section.style.display = '';
+        document
+          .querySelectorAll('#testimonials .reveal')
+          .forEach((el) => io.observe(el));
       }
 
       const galleryWrap = document.getElementById('galleryWrap');
@@ -2461,6 +3006,7 @@
         applyTranslations();
         renderSheet();
         if (activeCategory) openGallery(activeCategory, { scroll: false });
+        renderTestimonials();
       }
       document
         .getElementById('langToggle')
@@ -2496,6 +3042,17 @@
           window.scrollTo({ top: 0, behavior: 'smooth' }),
         );
 
+      document.querySelectorAll('.service-cta').forEach((cta) => {
+        cta.addEventListener('click', () => {
+          const categoryId = cta.dataset.service;
+          const select = document.getElementById('f-type');
+          const option = Array.from(select.options).find(
+            (o) => o.dataset.i18n === `cat.${categoryId}.label`,
+          );
+          if (option) option.selected = true;
+        });
+      });
+
       // reveal-on-scroll
       const revealEls = document.querySelectorAll('.reveal');
       const io = new IntersectionObserver(
@@ -2513,6 +3070,8 @@
       loadLiveContent().then(() => {
         if (window.innerWidth > 860)
           openGallery(categories[0], { scroll: false });
+        renderTestimonials();
+        renderAboutPhoto();
       });
     </script>
   </body>

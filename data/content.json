@@ -975,5 +975,9 @@
         }
       ]
     }
+  },
+  "testimonials": [],
+  "about": {
+    "photo": null
   }
 }

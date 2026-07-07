@@ -196,6 +196,41 @@
   <button id="uploadBtn">Upload & publish section</button>
 </div>
 
+<div class="card">
+  <h2>4. Manage testimonials</h2>
+  <div class="row">
+    <div>
+      <label>Client name</label>
+      <input type="text" id="testName" placeholder="ex : Marie Dubois">
+    </div>
+    <div>
+      <label>Role / company — optional</label>
+      <input type="text" id="testRole" placeholder="ex : Directrice, Villa Casa Nostra">
+    </div>
+  </div>
+  <label>Quote (FR)</label>
+  <textarea id="testQuoteFr" rows="3" placeholder="Le shoot a dépassé nos attentes..."></textarea>
+  <label>Quote (EN) — optional, falls back to FR</label>
+  <textarea id="testQuoteEn" rows="3" placeholder="The shoot exceeded our expectations..."></textarea>
+  <label>Photo or logo — optional</label>
+  <input type="file" id="testImage" accept="image/*">
+  <div class="file-preview" id="testImagePreview"></div>
+  <button id="addTestimonialBtn">Add testimonial</button>
+  <div class="media-grid" id="testimonialsList" style="margin-top:20px;"></div>
+</div>
+
+<div class="card">
+  <h2>5. About / bio photo</h2>
+  <div class="media-grid" id="aboutPhotoCurrent" style="max-width:130px;"></div>
+  <label style="margin-top:18px;">Replace photo</label>
+  <input type="file" id="aboutPhotoFile" accept="image/*">
+  <div class="file-preview" id="aboutPhotoPreview"></div>
+  <div style="display:flex; gap:10px;">
+    <button id="updateAboutPhotoBtn">Update photo</button>
+    <button class="secondary" id="removeAboutPhotoBtn">Remove photo</button>
+  </div>
+</div>
+
 </div>
 
 <aside class="layout-log">
@@ -266,6 +301,8 @@
     setConfig(cfg);
     $('setupStatus').classList.add('show');
     log('Connection saved locally.', 'ok');
+    renderTestimonialsList();
+    renderAboutPhotoCurrent();
   });
 
   $('clearConfig').addEventListener('click', () => {
@@ -352,10 +389,13 @@
   async function loadContentJson(){
     const file = await ghGet('data/content.json');
     if(!file){
-      return { _sha:null, data:{ categories:{ 'real-estate':{sections:[]}, events:{sections:[]}, beauty:{sections:[]}, model:{sections:[]}, drone:{sections:[]}, corporate:{sections:[]} } } };
+      return { _sha:null, data:{ categories:{ 'real-estate':{sections:[]}, events:{sections:[]}, beauty:{sections:[]}, model:{sections:[]}, drone:{sections:[]}, corporate:{sections:[]} }, testimonials:[], about:{ photo:null } } };
     }
     const decoded = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
-    return { _sha: file.sha, data: JSON.parse(decoded) };
+    const data = JSON.parse(decoded);
+    if(!data.testimonials) data.testimonials = [];
+    if(!data.about) data.about = { photo: null };
+    return { _sha: file.sha, data };
   }
 
   async function saveContentJson(dataObj, sha, message){
@@ -954,6 +994,192 @@
       btn.disabled = false;
     }
   });
+
+  // ---------- Testimonials ----------
+  const testImagePicker = createFilePicker($('testImage'), $('testImagePreview'));
+
+  async function renderTestimonialsList(){
+    const container = $('testimonialsList');
+    if(!getConfig()){
+      container.innerHTML = '<p class="hint">Connect to GitHub (step 1) to manage testimonials.</p>';
+      return;
+    }
+    container.innerHTML = '<p class="hint">Loading testimonials…</p>';
+    try{
+      const { data } = await loadContentJson();
+      if(!data.testimonials.length){
+        container.innerHTML = '<p class="hint">No testimonials yet.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      data.testimonials.forEach((t) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'media-thumb';
+        thumb.style.aspectRatio = '4/5';
+        thumb.title = `${t.name}${t.role ? ' — ' + t.role : ''}`;
+        const mediaEl = t.image
+          ? `<img src="${t.image.path}" alt="" loading="lazy">`
+          : `<span style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:28px; color:var(--paper-dim);">${(t.name || '?').charAt(0).toUpperCase()}</span>`;
+        thumb.innerHTML = `
+          ${mediaEl}
+          <span class="thumb-tag">${t.name}</span>
+          <button type="button" class="remove-media" title="Remove testimonial">&times;</button>
+        `;
+        thumb.querySelector('.remove-media').addEventListener('click', () => removeTestimonial(t.id));
+        container.appendChild(thumb);
+      });
+    } catch(err){
+      container.innerHTML = '';
+      log(err.message, 'err');
+    }
+  }
+
+  $('addTestimonialBtn').addEventListener('click', async () => {
+    const name = $('testName').value.trim();
+    const role = $('testRole').value.trim();
+    const quoteFr = $('testQuoteFr').value.trim();
+    const quoteEn = $('testQuoteEn').value.trim();
+    const [imageFile] = testImagePicker.getFiles();
+
+    if(!name){ alert('Client name is required.'); return; }
+    if(!quoteFr){ alert('A quote (FR) is required.'); return; }
+
+    const btn = $('addTestimonialBtn');
+    btn.disabled = true;
+    try{
+      let image = null;
+      if(imageFile){
+        const id = slugify(name);
+        const { path, sha } = await uploadMediaEntry(imageFile, 'photo', 'images', 'testimonials', id);
+        image = { path, sha };
+      }
+      const testimonial = {
+        id: slugify(name),
+        name,
+        role: role || '',
+        quote: { fr: quoteFr, en: quoteEn || quoteFr },
+        image,
+      };
+      await updateContentJson((data) => {
+        if(!data.testimonials) data.testimonials = [];
+        data.testimonials.push(testimonial);
+      }, `Add testimonial from ${name}`);
+      log(`Testimonial from "${name}" added.`, 'ok');
+      $('testName').value = ''; $('testRole').value = '';
+      $('testQuoteFr').value = ''; $('testQuoteEn').value = '';
+      testImagePicker.clear();
+      renderTestimonialsList();
+    } catch(err){
+      log(err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  async function removeTestimonial(id){
+    if(!confirm('Remove this testimonial? Its photo (if any) will also be deleted from the repo.')) return;
+    try{
+      const removed = await updateContentJson((data) => {
+        const idx = data.testimonials.findIndex(t => t.id === id);
+        if(idx === -1) throw new Error('Testimonial not found — it may have already been removed.');
+        return data.testimonials.splice(idx, 1)[0];
+      }, `Remove testimonial ${id}`);
+      if(removed.image && removed.image.sha){
+        try{
+          await ghDelete(removed.image.path, removed.image.sha, `Remove testimonial photo ${id}`);
+        } catch(fileErr){
+          log(`Warning: could not delete photo from repo (${fileErr.message}) — removed from listing anyway.`, 'err');
+        }
+      }
+      log('Testimonial removed.', 'ok');
+      renderTestimonialsList();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  }
+
+  renderTestimonialsList();
+
+  // ---------- About / bio photo ----------
+  const aboutPhotoPicker = createFilePicker($('aboutPhotoFile'), $('aboutPhotoPreview'));
+
+  async function renderAboutPhotoCurrent(){
+    const container = $('aboutPhotoCurrent');
+    if(!getConfig()){
+      container.innerHTML = '<p class="hint">Connect to GitHub (step 1) to manage this.</p>';
+      return;
+    }
+    container.innerHTML = '<p class="hint">Loading…</p>';
+    try{
+      const { data } = await loadContentJson();
+      const photo = data.about && data.about.photo;
+      container.innerHTML = '';
+      const thumb = document.createElement('div');
+      thumb.className = 'media-thumb';
+      thumb.style.aspectRatio = '4/5';
+      thumb.innerHTML = photo
+        ? `<img src="${photo.path}" alt="" loading="lazy">`
+        : '<p class="hint" style="padding:8px;">No photo set — showing initials placeholder on the live site.</p>';
+      container.appendChild(thumb);
+    } catch(err){
+      container.innerHTML = '';
+      log(err.message, 'err');
+    }
+  }
+
+  $('updateAboutPhotoBtn').addEventListener('click', async () => {
+    const [imageFile] = aboutPhotoPicker.getFiles();
+    if(!imageFile){ alert('Choose a photo first.'); return; }
+    const btn = $('updateAboutPhotoBtn');
+    btn.disabled = true;
+    try{
+      const { data: existing } = await loadContentJson();
+      const previous = existing.about && existing.about.photo;
+      const { path, sha } = await uploadMediaEntry(imageFile, 'photo', 'images', 'about', 'bio');
+      await updateContentJson((data) => {
+        if(!data.about) data.about = {};
+        data.about.photo = { path, sha };
+      }, 'Update about/bio photo');
+      if(previous && previous.sha && previous.path !== path){
+        try{
+          await ghDelete(previous.path, previous.sha, 'Remove previous about/bio photo');
+        } catch(fileErr){
+          log(`Warning: could not delete previous photo (${fileErr.message}).`, 'err');
+        }
+      }
+      log('About photo updated.', 'ok');
+      aboutPhotoPicker.clear();
+      renderAboutPhotoCurrent();
+    } catch(err){
+      log(err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('removeAboutPhotoBtn').addEventListener('click', async () => {
+    if(!confirm('Remove the about/bio photo? The live site will fall back to the initials placeholder.')) return;
+    try{
+      const removed = await updateContentJson((data) => {
+        const photo = data.about && data.about.photo;
+        if(data.about) data.about.photo = null;
+        return photo;
+      }, 'Remove about/bio photo');
+      if(removed && removed.sha){
+        try{
+          await ghDelete(removed.path, removed.sha, 'Remove about/bio photo file');
+        } catch(fileErr){
+          log(`Warning: could not delete photo from repo (${fileErr.message}).`, 'err');
+        }
+      }
+      log('About photo removed.', 'ok');
+      renderAboutPhotoCurrent();
+    } catch(err){
+      log(err.message, 'err');
+    }
+  });
+
+  renderAboutPhotoCurrent();
 </script>
 
 </body>
