@@ -978,6 +978,9 @@
   },
   "testimonials": [],
   "about": {
-    "photo": null
+    "photo": {
+      "path": "images/about/bio/1783449153904-w45ve.jpg",
+      "sha": "fad1d05ee128b6ee149a8f7014419210f827bb8e"
+    }
   }
 }
