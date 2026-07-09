@@ -1711,7 +1711,12 @@
           <span class="rec-dot" style="animation: none"></span> REC
         </div>
         <div class="vf-tag bottom"><span>f/2.8 · 35mm</span><b>ISO 200</b></div>
-        <img src="assets/images/beauty/Hero.jpg" alt="Featured shoot still" />
+        <img
+          src="assets/images/beauty/Hero.jpg"
+          alt="Featured shoot still"
+          fetchpriority="high"
+          decoding="async"
+        />
       </div>
       <div class="scroll-cue mono">
         <span data-i18n="hero.scroll">DÉFILER</span> <span class="chev">↓</span>
@@ -1744,6 +1749,8 @@
             src=""
             alt="Brandon — Vybz Alone"
             id="aboutPhoto"
+            loading="lazy"
+            decoding="async"
             style="display: none"
           />
           <div class="about-photo-placeholder" id="aboutPhotoPlaceholder">
@@ -2532,7 +2539,7 @@
           btn.setAttribute('data-id', c.id);
           btn.innerHTML = `
         <span class="num mono">0${i + 1}</span>
-<img src="images/${c.id}/cover.jpg" alt="${c.label[lang]} sample" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${c.seed}/700/700';">        <div class="label"><h3>${c.label[lang]}</h3><span>${c.tag[lang]}</span></div>
+<img src="images/${c.id}/cover.jpg" alt="${c.label[lang]} sample" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${c.seed}/700/700';">        <div class="label"><h3>${c.label[lang]}</h3><span>${c.tag[lang]}</span></div>
       `;
           btn.addEventListener('mousemove', (e) => {
             const r = btn.getBoundingClientRect();
@@ -2592,7 +2599,7 @@
           card.className = 'testimonial-card reveal';
           const quote = (t.quote && (t.quote[lang] || t.quote.fr)) || '';
           const avatarEl = t.image
-            ? `<img src="${t.image.path}" alt="${t.name}">`
+            ? `<img src="${t.image.path}" alt="${t.name}" loading="lazy" decoding="async">`
             : (t.name || '?').charAt(0).toUpperCase();
           card.innerHTML = `
             <div class="t-avatar">${avatarEl}</div>
@@ -2719,8 +2726,16 @@
       // would overflow the container width, close the row and rescale its height so
       // it lands exactly at 100% width. Rows are then paged, 3 at a time, with arrows.
       const FILMSTRIP_GAP = 14;
-      const FILMSTRIP_REF_HEIGHT = 300;
+      let FILMSTRIP_REF_HEIGHT = 300;
       const FILMSTRIP_ROWS_PER_PAGE = 3;
+
+      // Smaller reference row height on narrow viewports so images take up
+      // less screen space and more of them fit per scroll on mobile.
+      function refHeightFor(containerWidth) {
+        if (containerWidth < 480) return 150;
+        if (containerWidth < 720) return 190;
+        return 300;
+      }
       let filmstripPages = [];
       let filmstripPageIndex = 0;
 
@@ -2778,11 +2793,11 @@
         const posterAttr = item.poster ? ` poster="${item.poster}"` : '';
         let mediaEl;
         if (item.type === 'youtube') {
-          mediaEl = `<img src="${item.poster}" alt="${item.alt || ''}"><span class="play-overlay">▶</span>`;
+          mediaEl = `<img src="${item.poster}" alt="${item.alt || ''}" loading="lazy" decoding="async"><span class="play-overlay">▶</span>`;
         } else if (item.type === 'video') {
-          mediaEl = `<video src="${item.mediaSrc}"${posterAttr} muted loop playsinline autoplay></video>`;
+          mediaEl = `<video src="${item.mediaSrc}"${posterAttr} muted loop playsinline autoplay preload="metadata"></video>`;
         } else {
-          mediaEl = `<img src="${item.mediaSrc}" alt="${item.alt || ''}">`;
+          mediaEl = `<img src="${item.mediaSrc}" alt="${item.alt || ''}" loading="lazy" decoding="async">`;
         }
         const isVideoLike = item.type === 'video' || item.type === 'youtube';
         return `
@@ -2827,6 +2842,7 @@
 
       function layoutFilmstrip() {
         const containerWidth = filmstrip.clientWidth || 1200;
+        FILMSTRIP_REF_HEIGHT = refHeightFor(containerWidth);
         const rows = computeJustifiedRows(currentGalleryMedia, containerWidth);
         filmstripPages = [];
         for (let i = 0; i < rows.length; i += FILMSTRIP_ROWS_PER_PAGE) {
