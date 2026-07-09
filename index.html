@@ -2894,7 +2894,7 @@
         }
       }
 
-      function layoutFilmstrip() {
+      function layoutFilmstrip(resetPage = true) {
         const containerWidth = filmstrip.clientWidth || 1200;
         FILMSTRIP_REF_HEIGHT = refHeightFor(containerWidth);
         const rows = computeJustifiedRows(currentGalleryMedia, containerWidth);
@@ -2902,7 +2902,9 @@
         for (let i = 0; i < rows.length; i += FILMSTRIP_ROWS_PER_PAGE) {
           filmstripPages.push(rows.slice(i, i + FILMSTRIP_ROWS_PER_PAGE));
         }
-        filmstripPageIndex = 0;
+        filmstripPageIndex = resetPage
+          ? 0
+          : Math.max(0, Math.min(filmstripPageIndex, filmstripPages.length - 1));
         renderFilmstripPage();
       }
 
@@ -2978,7 +2980,10 @@
       window.addEventListener('resize', () => {
         if (!galleryWrap.classList.contains('show')) return;
         clearTimeout(filmstripResizeTimer);
-        filmstripResizeTimer = setTimeout(layoutFilmstrip, 200);
+        // Keep the current page on resize — mobile browsers fire resize
+        // during scroll/swipe as the address bar collapses, and jumping
+        // back to page 1 there would fight the user's swipe navigation.
+        filmstripResizeTimer = setTimeout(() => layoutFilmstrip(false), 200);
       });
 
       function renderPlaceholderSection(c) {
