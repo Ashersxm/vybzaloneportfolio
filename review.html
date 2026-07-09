@@ -186,6 +186,36 @@
         font-size: 13px;
         color: var(--paper-dim);
       }
+      .field-rating label {
+        display: block;
+        position: static;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--paper-dim);
+        margin-bottom: 10px;
+      }
+      .star-rating {
+        display: flex;
+        gap: 6px;
+      }
+      .star-rating .star {
+        all: unset;
+        cursor: pointer;
+        font-size: 28px;
+        line-height: 1;
+        color: var(--line-strong);
+        transition:
+          color 0.15s ease,
+          transform 0.15s ease;
+      }
+      .star-rating .star.filled {
+        color: var(--brass-bright);
+      }
+      .star-rating .star:hover {
+        transform: scale(1.15);
+      }
       .btn {
         font-family: 'JetBrains Mono', monospace;
         font-size: 11.5px;
@@ -315,6 +345,17 @@
             <input id="r-name" name="name" type="text" placeholder=" " required />
             <label for="r-name" data-i18n="name">Votre nom</label>
           </div>
+          <div class="field field-rating">
+            <label data-i18n="rating">Votre note</label>
+            <div class="star-rating" id="starRating" role="radiogroup" aria-label="Rating">
+              <button type="button" class="star" data-value="1">★</button>
+              <button type="button" class="star" data-value="2">★</button>
+              <button type="button" class="star" data-value="3">★</button>
+              <button type="button" class="star" data-value="4">★</button>
+              <button type="button" class="star" data-value="5">★</button>
+            </div>
+            <input type="hidden" name="rating" id="r-rating" value="5" />
+          </div>
           <div class="field">
             <input id="r-role" name="role" type="text" placeholder=" " />
             <label for="r-role" data-i18n="role">Rôle / entreprise — optionnel</label>
@@ -365,6 +406,7 @@
           title: 'Partagez votre expérience.',
           lede: "Votre avis aide d'autres clients à savoir à quoi s'attendre. Une fois envoyé, il sera examiné avant d'apparaître sur le site — comptez quelques jours.",
           name: 'Votre nom',
+          rating: 'Votre note',
           role: 'Rôle / entreprise — optionnel',
           quote: 'Votre avis',
           website: 'Site web / Instagram — optionnel',
@@ -385,6 +427,7 @@
           title: 'Share your experience.',
           lede: "Your review helps other clients know what to expect. Once submitted, it'll be reviewed before appearing on the site — allow a few days.",
           name: 'Your name',
+          rating: 'Your rating',
           role: 'Role / company — optional',
           quote: 'Your review',
           website: 'Website / Instagram — optional',
@@ -422,6 +465,28 @@
       const reviewNote = document.getElementById('reviewNote');
       const reviewSubmit = document.getElementById('reviewSubmit');
       const thanksCard = document.getElementById('thanksCard');
+
+      const stars = document.querySelectorAll('#starRating .star');
+      const ratingInput = document.getElementById('r-rating');
+      const starRating = document.getElementById('starRating');
+      function paintStars(value) {
+        stars.forEach((s) => {
+          s.classList.toggle('filled', Number(s.dataset.value) <= value);
+        });
+      }
+      stars.forEach((s) => {
+        s.addEventListener('click', () => {
+          ratingInput.value = s.dataset.value;
+          paintStars(Number(s.dataset.value));
+        });
+        s.addEventListener('mouseenter', () =>
+          paintStars(Number(s.dataset.value)),
+        );
+      });
+      starRating.addEventListener('mouseleave', () =>
+        paintStars(Number(ratingInput.value)),
+      );
+      paintStars(Number(ratingInput.value));
 
       reviewForm.addEventListener('submit', async (e) => {
         e.preventDefault();

@@ -817,6 +817,12 @@
         height: 100%;
         object-fit: cover;
       }
+      .testimonial-card .t-stars {
+        color: var(--brass-bright);
+        font-size: 14px;
+        letter-spacing: 2px;
+        margin-top: -6px;
+      }
       .testimonial-card .t-quote {
         font-family: 'Fraunces', serif;
         font-style: italic;
@@ -1667,6 +1673,7 @@
         <a href="#work" data-i18n="nav.work">Portfolio</a>
         <a href="#services" data-i18n="nav.services">Services</a>
         <a href="#approach" data-i18n="nav.approach">Approche</a>
+        <a href="#testimonials" data-i18n="nav.reviews">Avis</a>
         <a href="#contact" data-i18n="nav.contact">Contact</a>
         <button
           id="langToggle"
@@ -1683,6 +1690,7 @@
       <a href="#work" data-i18n="nav.work">Portfolio</a>
       <a href="#services" data-i18n="nav.services">Services</a>
       <a href="#approach" data-i18n="nav.approach">Approche</a>
+      <a href="#testimonials" data-i18n="nav.reviews">Avis</a>
       <a href="#contact" data-i18n="nav.contact">Contact</a>
       <button
         id="langToggleMobile"
@@ -2247,6 +2255,7 @@
           'nav.work': 'Portfolio',
           'nav.services': 'Services',
           'nav.approach': 'Approche',
+          'nav.reviews': 'Avis',
           'nav.contact': 'Contact',
 
           // Hero
@@ -2383,6 +2392,7 @@
           'nav.work': 'Portfolio',
           'nav.services': 'Services',
           'nav.approach': 'Approach',
+          'nav.reviews': 'Reviews',
           'nav.contact': 'Contact',
 
           // Hero
@@ -2626,8 +2636,11 @@
               ? t.website
               : `https://${t.website}`;
           }
+          const rating = Math.min(5, Math.max(1, Number(t.rating) || 5));
+          const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
           card.innerHTML = `
             <div class="t-avatar">${avatarEl}</div>
+            <div class="t-stars" aria-label="${rating}/5">${stars}</div>
             <p class="t-quote">"${quote}"</p>
             <div class="t-name">${t.name}</div>
             ${t.role ? `<div class="t-role">${t.role}</div>` : ''}
