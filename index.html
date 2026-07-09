@@ -1017,6 +1017,7 @@
         display: flex;
         flex-direction: column;
         gap: 14px;
+        touch-action: pan-y;
       }
       .filmstrip-row {
         display: flex;
@@ -1065,6 +1066,12 @@
       .filmstrip-pager .mono {
         font-size: 11px;
         color: var(--paper-dim);
+      }
+      @media (max-width: 720px) {
+        /* Swipe replaces tap-to-page on touch/mobile widths. */
+        .filmstrip-pager .arrow-btn {
+          display: none;
+        }
       }
       .arrow-btn {
         width: 38px;
@@ -2852,18 +2859,73 @@
         renderFilmstripPage();
       }
 
-      document.getElementById('pagerPrev').addEventListener('click', () => {
+      function goToPrevFilmstripPage() {
         if (filmstripPageIndex > 0) {
           filmstripPageIndex -= 1;
           renderFilmstripPage();
         }
-      });
-      document.getElementById('pagerNext').addEventListener('click', () => {
+      }
+      function goToNextFilmstripPage() {
         if (filmstripPageIndex < filmstripPages.length - 1) {
           filmstripPageIndex += 1;
           renderFilmstripPage();
         }
-      });
+      }
+
+      document
+        .getElementById('pagerPrev')
+        .addEventListener('click', goToPrevFilmstripPage);
+      document
+        .getElementById('pagerNext')
+        .addEventListener('click', goToNextFilmstripPage);
+
+      // ---------- Swipe to change page (mobile) ----------
+      const FILMSTRIP_SWIPE_THRESHOLD = 40;
+      let filmstripTouchStartX = 0;
+      let filmstripTouchStartY = 0;
+      let filmstripJustSwiped = false;
+
+      filmstrip.addEventListener(
+        'touchstart',
+        (e) => {
+          const t = e.touches[0];
+          filmstripTouchStartX = t.clientX;
+          filmstripTouchStartY = t.clientY;
+        },
+        { passive: true }
+      );
+
+      filmstrip.addEventListener(
+        'touchend',
+        (e) => {
+          const t = e.changedTouches[0];
+          const dx = t.clientX - filmstripTouchStartX;
+          const dy = t.clientY - filmstripTouchStartY;
+          if (
+            Math.abs(dx) > FILMSTRIP_SWIPE_THRESHOLD &&
+            Math.abs(dx) > Math.abs(dy) * 1.5
+          ) {
+            filmstripJustSwiped = true;
+            if (dx < 0) goToNextFilmstripPage();
+            else goToPrevFilmstripPage();
+          }
+        },
+        { passive: true }
+      );
+
+      // Swallow the click a swipe would otherwise trigger, so it doesn't
+      // also open the lightbox on the cell the finger lifted off of.
+      filmstrip.addEventListener(
+        'click',
+        (e) => {
+          if (filmstripJustSwiped) {
+            e.stopPropagation();
+            e.preventDefault();
+            filmstripJustSwiped = false;
+          }
+        },
+        true
+      );
 
       let filmstripResizeTimer = null;
       window.addEventListener('resize', () => {
