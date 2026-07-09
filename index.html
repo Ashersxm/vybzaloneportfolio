@@ -836,6 +836,16 @@
         color: var(--paper-dim);
         margin-top: -12px;
       }
+      .testimonial-card .t-website {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--brass-bright);
+        text-decoration: none;
+        margin-top: -8px;
+      }
+      .testimonial-card .t-website:hover {
+        text-decoration: underline;
+      }
 
       /* ---------- CATEGORY GRID ---------- */
       .sheet {
@@ -2610,11 +2620,18 @@
           const avatarEl = t.image
             ? `<img src="${t.image.path}" alt="${t.name}" loading="lazy" decoding="async">`
             : (t.name || '?').charAt(0).toUpperCase();
+          let websiteHref = null;
+          if (t.website) {
+            websiteHref = /^https?:\/\//i.test(t.website)
+              ? t.website
+              : `https://${t.website}`;
+          }
           card.innerHTML = `
             <div class="t-avatar">${avatarEl}</div>
             <p class="t-quote">"${quote}"</p>
             <div class="t-name">${t.name}</div>
             ${t.role ? `<div class="t-role">${t.role}</div>` : ''}
+            ${websiteHref ? `<a class="t-website" href="${websiteHref}" target="_blank" rel="noopener noreferrer">${t.website}</a>` : ''}
           `;
           grid.appendChild(card);
         });

@@ -198,6 +198,10 @@
 
 <div class="card">
   <h2>4. Manage testimonials</h2>
+  <p class="hint">
+    Share this link with clients so they can submit a review themselves: <b id="reviewLinkText">…</b>
+    Submissions are emailed to you (nothing publishes automatically) — once you're happy with one, add it below to publish it.
+  </p>
   <div class="row">
     <div>
       <label>Client name</label>
@@ -212,6 +216,8 @@
   <textarea id="testQuoteFr" rows="3" placeholder="Le shoot a dépassé nos attentes..."></textarea>
   <label>Quote (EN) — optional, falls back to FR</label>
   <textarea id="testQuoteEn" rows="3" placeholder="The shoot exceeded our expectations..."></textarea>
+  <label>Website / Instagram — optional</label>
+  <input type="text" id="testWebsite" placeholder="ex : https://instagram.com/marie">
   <label>Photo or logo — optional</label>
   <input type="file" id="testImage" accept="image/*">
   <div class="file-preview" id="testImagePreview"></div>
@@ -249,6 +255,7 @@
   const $ = (id) => document.getElementById(id);
   const logEl = $('log');
   const toastStack = $('toastStack');
+  $('reviewLinkText').textContent = new URL('review.html', location.href).href;
 
   function showToast(msg, cls){
     const toast = document.createElement('div');
@@ -1039,6 +1046,7 @@
     const role = $('testRole').value.trim();
     const quoteFr = $('testQuoteFr').value.trim();
     const quoteEn = $('testQuoteEn').value.trim();
+    const website = $('testWebsite').value.trim();
     const [imageFile] = testImagePicker.getFiles();
 
     if(!name){ alert('Client name is required.'); return; }
@@ -1058,6 +1066,7 @@
         name,
         role: role || '',
         quote: { fr: quoteFr, en: quoteEn || quoteFr },
+        website: website || '',
         image,
       };
       await updateContentJson((data) => {
@@ -1067,6 +1076,7 @@
       log(`Testimonial from "${name}" added.`, 'ok');
       $('testName').value = ''; $('testRole').value = '';
       $('testQuoteFr').value = ''; $('testQuoteEn').value = '';
+      $('testWebsite').value = '';
       testImagePicker.clear();
       renderTestimonialsList();
     } catch(err){
