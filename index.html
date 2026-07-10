@@ -1673,7 +1673,13 @@
         <a href="#work" data-i18n="nav.work">Portfolio</a>
         <a href="#services" data-i18n="nav.services">Services</a>
         <a href="#approach" data-i18n="nav.approach">Approche</a>
-        <a href="#testimonials" data-i18n="nav.reviews">Avis</a>
+        <a
+          href="#testimonials"
+          class="nav-reviews-link"
+          data-i18n="nav.reviews"
+          style="display: none"
+          >Avis</a
+        >
         <a href="#contact" data-i18n="nav.contact">Contact</a>
         <button
           id="langToggle"
@@ -1690,7 +1696,13 @@
       <a href="#work" data-i18n="nav.work">Portfolio</a>
       <a href="#services" data-i18n="nav.services">Services</a>
       <a href="#approach" data-i18n="nav.approach">Approche</a>
-      <a href="#testimonials" data-i18n="nav.reviews">Avis</a>
+      <a
+        href="#testimonials"
+        class="nav-reviews-link"
+        data-i18n="nav.reviews"
+        style="display: none"
+        >Avis</a
+      >
       <a href="#contact" data-i18n="nav.contact">Contact</a>
       <button
         id="langToggleMobile"
@@ -2060,8 +2072,8 @@
           <div class="contact-rows">
             <div class="contact-row">
               <span class="k" data-i18n="contact.email">Email</span
-              ><a class="v" href="mailto:vybz.digital978@gmail.com"
-                >vybz.digital978@gmail.com</a
+              ><a class="v" href="mailto:brandon@vybzalone.com"
+                >brandon@vybzalone.com</a
               >
             </div>
             <div class="contact-row">
@@ -2617,11 +2629,14 @@
       function renderTestimonials() {
         const section = document.getElementById('testimonials');
         const grid = document.getElementById('testimonialsGrid');
+        const navLinks = document.querySelectorAll('.nav-reviews-link');
         const testimonials = (liveContent && liveContent.testimonials) || [];
         if (!testimonials.length) {
           section.style.display = 'none';
+          navLinks.forEach((el) => (el.style.display = 'none'));
           return;
         }
+        navLinks.forEach((el) => (el.style.display = ''));
         grid.innerHTML = '';
         testimonials.forEach((t) => {
           const card = document.createElement('div');
@@ -3071,18 +3086,18 @@
           sent: 'Envoyé ✓',
           sentNote: 'Envoyé — réponse sous 24-48h.',
           error:
-            'Un problème est survenu — écrivez à vybz.digital978@gmail.com.',
+            'Un problème est survenu — écrivez à brandon@vybzalone.com.',
           notConnected:
-            'Formulaire pas encore connecté — écrivez à vybz.digital978@gmail.com.',
+            'Formulaire pas encore connecté — écrivez à brandon@vybzalone.com.',
         },
         en: {
           sending: 'Sending…',
           sent: 'Sent ✓',
           sentNote: "Sent — you'll hear back within 24-48h.",
           error:
-            'Something went wrong — email vybz.digital978@gmail.com directly.',
+            'Something went wrong — email brandon@vybzalone.com directly.',
           notConnected:
-            "Form isn't connected yet — email vybz.digital978@gmail.com directly.",
+            "Form isn't connected yet — email brandon@vybzalone.com directly.",
         },
       };
       const inquiryForm = document.getElementById('inquiryForm');
