@@ -1416,12 +1416,34 @@
       }
 
       .form-card {
-        background: var(--glass);
-        border: 1px solid var(--line-strong);
+        position: relative;
+        background: linear-gradient(
+          165deg,
+          rgba(210, 172, 102, 0.14),
+          rgba(29, 32, 37, 0.88) 45%
+        );
+        border: 1px solid rgba(210, 172, 102, 0.4);
         border-radius: 14px;
-        padding: 36px;
+        padding: 38px;
         backdrop-filter: blur(10px);
-        box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.5);
+        box-shadow:
+          0 30px 70px -30px rgba(0, 0, 0, 0.6),
+          0 0 90px -20px rgba(210, 172, 102, 0.35);
+        overflow: hidden;
+      }
+      .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--brass-bright),
+          transparent
+        );
       }
       .inquiry-form {
         display: flex;
@@ -1566,8 +1588,8 @@
         min-width: 130px;
         padding: 14px 16px;
         border-radius: 8px;
-        border: 1px solid var(--line-strong);
-        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(239, 234, 226, 0.25);
+        background: rgba(255, 255, 255, 0.05);
         color: var(--paper);
         font-family: 'Inter', sans-serif;
         font-size: 14px;
@@ -1576,7 +1598,8 @@
         transition:
           border-color 0.2s ease,
           background 0.2s ease,
-          transform 0.2s ease;
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
       .quiz-option .qo-tag {
         display: block;
@@ -1588,11 +1611,14 @@
       }
       .quiz-option:hover {
         border-color: var(--brass-bright);
+        background: rgba(210, 172, 102, 0.08);
         transform: translateY(-2px);
+        box-shadow: 0 8px 20px -10px rgba(210, 172, 102, 0.5);
       }
       .quiz-option.selected {
         border-color: var(--brass-bright);
-        background: rgba(210, 172, 102, 0.1);
+        background: rgba(210, 172, 102, 0.18);
+        box-shadow: 0 0 0 1px rgba(210, 172, 102, 0.4);
       }
       .quiz-back {
         align-self: flex-start;
