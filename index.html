@@ -1495,6 +1495,143 @@
         text-align: center;
         margin-top: 4px;
       }
+      .form-note:empty {
+        display: none;
+      }
+
+      /* ---------- INQUIRY QUIZ ---------- */
+      .quiz-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .quiz-progress {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .quiz-eyebrow {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--paper-dim);
+      }
+      .quiz-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .quiz-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--line-strong);
+        transition:
+          background 0.3s ease,
+          transform 0.3s ease;
+      }
+      .quiz-dot.done {
+        background: var(--brass-bright);
+      }
+      .quiz-dot.current {
+        background: var(--paper);
+        transform: scale(1.3);
+      }
+      .quiz-step {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .quiz-step[hidden] {
+        display: none;
+      }
+      .quiz-step-label {
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--paper-dim);
+      }
+      .quiz-question {
+        font-family: 'Fraunces', serif;
+        font-weight: 500;
+        font-size: 23px;
+        line-height: 1.25;
+      }
+      .quiz-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .quiz-option {
+        flex: 1 1 auto;
+        min-width: 130px;
+        padding: 14px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--line-strong);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--paper);
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+      .quiz-option .qo-tag {
+        display: block;
+        margin-top: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9.5px;
+        letter-spacing: 0.04em;
+        color: var(--paper-dim);
+      }
+      .quiz-option:hover {
+        border-color: var(--brass-bright);
+        transform: translateY(-2px);
+      }
+      .quiz-option.selected {
+        border-color: var(--brass-bright);
+        background: rgba(210, 172, 102, 0.1);
+      }
+      .quiz-back {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        color: var(--paper-dim);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: color 0.2s ease;
+      }
+      .quiz-back:hover {
+        color: var(--paper);
+      }
+      .quiz-success {
+        align-items: center;
+        text-align: center;
+        padding: 12px 0 4px;
+      }
+      .quiz-success .quiz-question {
+        font-size: 21px;
+      }
+      .quiz-success-copy {
+        color: var(--paper-dim);
+        font-size: 11px;
+      }
+      .qs-check {
+        width: 48px;
+        height: 48px;
+        border-radius: 100px;
+        background: var(--brass-bright);
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
 
       /* ---------- MARQUEE ---------- */
       .marquee-wrap {
@@ -2108,76 +2245,115 @@
         <div class="form-card reveal">
           <form
             id="inquiryForm"
-            class="inquiry-form"
+            class="quiz-form"
             action="https://formspree.io/f/mnjklgnb"
             method="POST"
           >
-            <div class="field">
-              <input
-                id="f-name"
-                name="name"
-                type="text"
-                placeholder=" "
-                required
-              />
-              <label for="f-name" data-i18n="form.name">Nom</label>
-            </div>
-            <div class="field">
-              <input
-                id="f-company"
-                name="company"
-                type="text"
-                placeholder=" "
-              />
-              <label for="f-company" data-i18n="form.company">Entreprise</label>
-            </div>
-            <div class="field">
-              <input
-                id="f-email"
-                name="email"
-                type="email"
-                placeholder=" "
-                required
-              />
-              <label for="f-email" data-i18n="form.email">Email</label>
-            </div>
-            <div class="field">
-              <select id="f-type" name="project_type">
-                <option data-i18n="cat.real-estate.label">Immobilier</option>
-                <option data-i18n="cat.events.label">Événements</option>
-                <option data-i18n="cat.beauty.label">
-                  Beauté & Cosmétique
-                </option>
-                <option data-i18n="cat.model.label">Personal Branding</option>
-                <option data-i18n="cat.drone.label">Drone</option>
-                <option data-i18n="cat.corporate.label">Corporate</option>
-                <option data-i18n="form.other">Autre</option>
-              </select>
-              <label for="f-type" data-i18n="form.type">Type de projet</label>
-            </div>
-            <div class="field">
-              <textarea
-                id="f-message"
-                name="message"
-                rows="3"
-                placeholder=" "
-                required
-              ></textarea>
-              <label for="f-message" data-i18n="form.message"
-                >Parlez-moi de votre projet.</label
+            <div class="quiz-progress">
+              <span class="quiz-eyebrow mono" data-i18n="quiz.eyebrow"
+                >UNE QUESTION À LA FOIS</span
               >
+              <div class="quiz-dots" id="quizDots"></div>
             </div>
+
+            <input type="hidden" id="f-category" name="project_type" />
+            <input type="hidden" id="f-timing" name="timing" />
+            <input type="hidden" id="f-budget" name="budget" />
+
+            <div class="quiz-step" data-step="0">
+              <div class="quiz-step-label mono" id="quizStepLabel0"></div>
+              <h3 class="quiz-question" data-i18n="quiz.q1">
+                De quoi avez-vous besoin ?
+              </h3>
+              <div class="quiz-options" id="quizCategoryOptions"></div>
+            </div>
+
+            <div class="quiz-step" data-step="1" hidden>
+              <div class="quiz-step-label mono" id="quizStepLabel1"></div>
+              <h3 class="quiz-question" data-i18n="quiz.q2">Pour quand ?</h3>
+              <div class="quiz-options" id="quizTimingOptions"></div>
+            </div>
+
+            <div class="quiz-step" data-step="2" hidden>
+              <div class="quiz-step-label mono" id="quizStepLabel2"></div>
+              <h3 class="quiz-question" data-i18n="quiz.q3">
+                Budget approximatif ?
+              </h3>
+              <div class="quiz-options" id="quizBudgetOptions"></div>
+            </div>
+
+            <div class="quiz-step" data-step="3" hidden>
+              <div class="quiz-step-label mono" id="quizStepLabel3"></div>
+              <h3 class="quiz-question" data-i18n="quiz.q4">
+                Où vous contacter ?
+              </h3>
+              <div class="field">
+                <input
+                  id="f-name"
+                  name="name"
+                  type="text"
+                  placeholder=" "
+                  required
+                />
+                <label for="f-name" data-i18n="form.name">Nom</label>
+              </div>
+              <div class="field">
+                <input
+                  id="f-email"
+                  name="email"
+                  type="email"
+                  placeholder=" "
+                  required
+                />
+                <label for="f-email" data-i18n="form.email">Email</label>
+              </div>
+              <div class="field">
+                <input id="f-phone" name="phone" type="tel" placeholder=" " />
+                <label for="f-phone" data-i18n="form.phone"
+                  >Téléphone (optionnel)</label
+                >
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="width: 100%; justify-content: center"
+                data-i18n="form.submit"
+              >
+                Envoyer la demande →
+              </button>
+              <p class="form-note mono" data-i18n="form.note">
+                Réponse sous 24-48h.
+              </p>
+            </div>
+
+            <div class="quiz-step quiz-success" data-step="4" hidden>
+              <div class="qs-check">✓</div>
+              <h3 class="quiz-question" data-i18n="quiz.success.title">
+                Merci — votre demande est en route.
+              </h3>
+              <p class="quiz-success-copy mono" data-i18n="form.note">
+                Réponse sous 24-48h.
+              </p>
+              <button
+                type="button"
+                class="btn btn-ghost"
+                id="quizRestart"
+                data-i18n="quiz.restart"
+              >
+                Envoyer une autre demande
+              </button>
+            </div>
+
+            <p class="form-note mono" id="formNote"></p>
             <button
-              type="submit"
-              class="btn btn-primary"
-              style="width: 100%; justify-content: center"
-              data-i18n="form.submit"
+              type="button"
+              class="quiz-back mono"
+              id="quizBack"
+              data-i18n="quiz.back"
+              hidden
             >
-              Envoyer la demande →
+              ← Retour
             </button>
-            <p class="form-note mono" id="formNote" data-i18n="form.note">
-              Réponse sous 24-48h.
-            </p>
           </form>
         </div>
       </div>
@@ -2259,6 +2435,20 @@
             en: 'BRAND FILM · TEAM · OFFICE',
           },
         },
+      ];
+
+      const quizTimingOptions = [
+        { id: 'asap', fr: 'Dès que possible', en: 'As soon as possible' },
+        { id: 'this-month', fr: 'Ce mois-ci', en: 'This month' },
+        { id: '1-3-months', fr: 'Dans 1 à 3 mois', en: 'In 1–3 months' },
+        { id: 'exploring', fr: 'Je regarde encore', en: 'Just exploring' },
+      ];
+      const quizBudgetOptions = [
+        { id: 'under-500', fr: '< 500 €', en: '< €500' },
+        { id: '500-1500', fr: '500 – 1 500 €', en: '€500 – 1,500' },
+        { id: '1500-3000', fr: '1 500 – 3 000 €', en: '€1,500 – 3,000' },
+        { id: '3000-plus', fr: '3 000 €+', en: '€3,000+' },
+        { id: 'unsure', fr: 'Je ne sais pas encore', en: 'Not sure yet' },
       ];
 
       const translations = {
@@ -2371,13 +2561,18 @@
 
           // Form
           'form.name': 'Nom',
-          'form.company': 'Entreprise',
           'form.email': 'Email',
-          'form.type': 'Type de projet',
-          'form.other': 'Autre',
-          'form.message': 'Parlez-moi de votre projet',
+          'form.phone': 'Téléphone (optionnel)',
           'form.submit': 'Envoyer la demande →',
           'form.note': 'Réponse sous 24 à 48 h.',
+          'quiz.eyebrow': 'UNE QUESTION À LA FOIS',
+          'quiz.q1': 'De quoi avez-vous besoin ?',
+          'quiz.q2': 'Pour quand ?',
+          'quiz.q3': 'Budget approximatif ?',
+          'quiz.q4': 'Où vous contacter ?',
+          'quiz.back': '← Retour',
+          'quiz.success.title': 'Merci — votre demande est en route.',
+          'quiz.restart': 'Envoyer une autre demande',
 
           // Contact information
           'contact.email': 'Email',
@@ -2507,13 +2702,18 @@
 
           // Form
           'form.name': 'Name',
-          'form.company': 'Company',
           'form.email': 'Email',
-          'form.type': 'Project Type',
-          'form.other': 'Other',
-          'form.message': 'Tell me about your project',
+          'form.phone': 'Phone (optional)',
           'form.submit': 'Send Inquiry →',
           'form.note': 'Replies within 24–48 hours.',
+          'quiz.eyebrow': 'ONE QUESTION AT A TIME',
+          'quiz.q1': 'What do you need?',
+          'quiz.q2': 'When do you need it?',
+          'quiz.q3': 'Roughly what budget?',
+          'quiz.q4': 'Where do we reach you?',
+          'quiz.back': '← Back',
+          'quiz.success.title': 'Thanks — your inquiry is on its way.',
+          'quiz.restart': 'Send another inquiry',
 
           // Contact information
           'contact.email': 'Email',
@@ -2894,7 +3094,7 @@
         }
       }
 
-      function layoutFilmstrip() {
+      function layoutFilmstrip(resetPage = true) {
         const containerWidth = filmstrip.clientWidth || 1200;
         FILMSTRIP_REF_HEIGHT = refHeightFor(containerWidth);
         const rows = computeJustifiedRows(currentGalleryMedia, containerWidth);
@@ -2902,7 +3102,9 @@
         for (let i = 0; i < rows.length; i += FILMSTRIP_ROWS_PER_PAGE) {
           filmstripPages.push(rows.slice(i, i + FILMSTRIP_ROWS_PER_PAGE));
         }
-        filmstripPageIndex = 0;
+        filmstripPageIndex = resetPage
+          ? 0
+          : Math.max(0, Math.min(filmstripPageIndex, filmstripPages.length - 1));
         renderFilmstripPage();
       }
 
@@ -2978,7 +3180,10 @@
       window.addEventListener('resize', () => {
         if (!galleryWrap.classList.contains('show')) return;
         clearTimeout(filmstripResizeTimer);
-        filmstripResizeTimer = setTimeout(layoutFilmstrip, 200);
+        // Keep the current page on resize — mobile browsers fire resize
+        // during scroll/swipe as the address bar collapses, and jumping
+        // back to page 1 there would fight the user's swipe navigation.
+        filmstripResizeTimer = setTimeout(() => layoutFilmstrip(false), 200);
       });
 
       function renderPlaceholderSection(c) {
@@ -3102,6 +3307,117 @@
       };
       const inquiryForm = document.getElementById('inquiryForm');
       const formNote = document.getElementById('formNote');
+
+      // ---------- Inquiry quiz ----------
+      const QUIZ_TOTAL_STEPS = 4;
+      let quizStepIndex = 0;
+      const quizAnswers = { category: null, timing: null, budget: null };
+
+      function quizStepLabelText(stepNum) {
+        return lang === 'fr'
+          ? `ÉTAPE ${stepNum} SUR ${QUIZ_TOTAL_STEPS}`
+          : `STEP ${stepNum} OF ${QUIZ_TOTAL_STEPS}`;
+      }
+
+      function renderQuizChoices(containerId, options, answerKey, hiddenInputId) {
+        const wrap = document.getElementById(containerId);
+        wrap.innerHTML = '';
+        options.forEach((o) => {
+          const optLabel = o.label ? o.label[lang] : o[lang];
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className =
+            'quiz-option' + (quizAnswers[answerKey] === o.id ? ' selected' : '');
+          btn.innerHTML = o.tag
+            ? `${optLabel}<span class="qo-tag">${o.tag[lang]}</span>`
+            : optLabel;
+          btn.addEventListener('click', () =>
+            selectQuizAnswer(answerKey, o.id, optLabel, hiddenInputId),
+          );
+          wrap.appendChild(btn);
+        });
+      }
+
+      function renderQuizDots() {
+        const dots = document.getElementById('quizDots');
+        dots.innerHTML = '';
+        for (let i = 0; i < QUIZ_TOTAL_STEPS; i++) {
+          const dot = document.createElement('span');
+          dot.className =
+            'quiz-dot' +
+            (i < quizStepIndex ? ' done' : i === quizStepIndex ? ' current' : '');
+          dots.appendChild(dot);
+        }
+      }
+
+      function renderQuizStep() {
+        renderQuizChoices('quizCategoryOptions', categories, 'category', 'f-category');
+        renderQuizChoices('quizTimingOptions', quizTimingOptions, 'timing', 'f-timing');
+        renderQuizChoices('quizBudgetOptions', quizBudgetOptions, 'budget', 'f-budget');
+        for (let i = 0; i < QUIZ_TOTAL_STEPS; i++) {
+          const label = document.getElementById(`quizStepLabel${i}`);
+          if (label) label.textContent = quizStepLabelText(i + 1);
+        }
+        renderQuizDots();
+      }
+
+      function setActiveQuizStep(stepNumber) {
+        document.querySelectorAll('.quiz-step').forEach((el) => {
+          el.hidden = Number(el.dataset.step) !== stepNumber;
+        });
+        document.getElementById('quizBack').hidden =
+          stepNumber === 0 || stepNumber === 4;
+      }
+
+      function goToQuizStep(i) {
+        quizStepIndex = Math.max(0, Math.min(i, QUIZ_TOTAL_STEPS - 1));
+        setActiveQuizStep(quizStepIndex);
+        renderQuizDots();
+      }
+
+      function showQuizSuccess() {
+        setActiveQuizStep(4);
+      }
+
+      function selectQuizAnswer(answerKey, id, label, hiddenInputId) {
+        quizAnswers[answerKey] = id;
+        document.getElementById(hiddenInputId).value = label;
+        renderQuizStep();
+        setTimeout(() => goToQuizStep(quizStepIndex + 1), 220);
+      }
+
+      function startQuizAt(stepIndex, categoryId) {
+        if (categoryId) {
+          const cat = categories.find((c) => c.id === categoryId);
+          if (cat) {
+            quizAnswers.category = cat.id;
+            document.getElementById('f-category').value = cat.label[lang];
+          }
+        }
+        renderQuizStep();
+        goToQuizStep(stepIndex);
+      }
+
+      function resetQuiz() {
+        quizAnswers.category = null;
+        quizAnswers.timing = null;
+        quizAnswers.budget = null;
+        inquiryForm.reset();
+        document.getElementById('f-category').value = '';
+        document.getElementById('f-timing').value = '';
+        document.getElementById('f-budget').value = '';
+        formNote.textContent = '';
+        renderQuizStep();
+        goToQuizStep(0);
+      }
+
+      document
+        .getElementById('quizBack')
+        .addEventListener('click', () => goToQuizStep(quizStepIndex - 1));
+      document
+        .getElementById('quizRestart')
+        .addEventListener('click', resetQuiz);
+
       inquiryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = inquiryForm.querySelector('button[type="submit"]');
@@ -3115,9 +3431,8 @@
             headers: { Accept: 'application/json' },
           });
           if (res.ok) {
-            inquiryForm.reset();
-            formNote.textContent = msg.sentNote;
-            submitBtn.textContent = msg.sent;
+            showQuizSuccess();
+            submitBtn.textContent = translations[lang]['form.submit'];
           } else {
             formNote.textContent = msg.error;
             submitBtn.textContent = translations[lang]['form.submit'];
@@ -3136,6 +3451,7 @@
         renderSheet();
         if (activeCategory) openGallery(activeCategory, { scroll: false });
         renderTestimonials();
+        renderQuizStep();
       }
       document
         .getElementById('langToggle')
@@ -3173,12 +3489,7 @@
 
       document.querySelectorAll('.service-cta').forEach((cta) => {
         cta.addEventListener('click', () => {
-          const categoryId = cta.dataset.service;
-          const select = document.getElementById('f-type');
-          const option = Array.from(select.options).find(
-            (o) => o.dataset.i18n === `cat.${categoryId}.label`,
-          );
-          if (option) option.selected = true;
+          startQuizAt(1, cta.dataset.service);
         });
       });
 
@@ -3196,6 +3507,8 @@
 
       // init
       applyTranslations();
+      renderQuizStep();
+      goToQuizStep(0);
       loadLiveContent().then(() => {
         if (window.innerWidth > 860)
           openGallery(categories[0], { scroll: false });
