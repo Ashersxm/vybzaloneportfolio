@@ -982,5 +982,8 @@
       "path": "images/about/bio/1783449522478-89oft.jpg",
       "sha": "02714626f2bea648e9574d73cbd16fc70f344862"
     }
+  },
+  "payment": {
+    "link": ""
   }
 }
