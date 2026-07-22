@@ -247,6 +247,33 @@
   </div>
 </div>
 
+<div class="card">
+  <h2>6. Traffic &amp; Analytics</h2>
+  <p class="hint">
+    The live site tracks visits with Google Analytics 4 (GA4). Because this is a static, no-backend
+    site, there's no live chart embedded here — instead, use these shortcuts to jump straight to the
+    real dashboards.
+  </p>
+  <p class="hint" style="margin-top:12px;">
+    <b>What's tracked:</b> every page view automatically, plus three conversion/engagement events —
+    <code>generate_lead</code> (inquiry quiz submitted, with project type / timing / budget attached),
+    and <code>contact_click</code> (email or Instagram link clicked, tagged by method).
+  </p>
+  <label>GA4 Property ID — optional, makes the button below deep-link straight to your report</label>
+  <input type="text" id="ga4PropertyId" placeholder="e.g. 123456789">
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button id="openGA4Btn">Open Google Analytics</button>
+    <button class="secondary" onclick="window.open('https://search.google.com/search-console','_blank')">Open Search Console</button>
+    <button class="secondary" onclick="window.open('https://business.google.com/','_blank')">Open Business Profile</button>
+  </div>
+  <p class="hint" style="margin-top:14px;">
+    First time setting this up? In GA4, go to Admin → Data Streams → your web stream to find your
+    Measurement ID (starts with <code>G-</code>), then paste it into the <code>G-XXXXXXXXXX</code>
+    placeholders near the top of <code>index.html</code> (there are two — the script src and the
+    <code>gtag('config', …)</code> call).
+  </p>
+</div>
+
 </div>
 
 <aside class="layout-log">
@@ -303,6 +330,19 @@
     }
   }
   loadSavedConfig();
+
+  const GA4_KEY = 'vybz_admin_ga4_property_id';
+  $('ga4PropertyId').value = localStorage.getItem(GA4_KEY) || '';
+  $('ga4PropertyId').addEventListener('change', () => {
+    localStorage.setItem(GA4_KEY, $('ga4PropertyId').value.trim());
+  });
+  $('openGA4Btn').addEventListener('click', () => {
+    const propertyId = $('ga4PropertyId').value.trim();
+    const url = propertyId
+      ? `https://analytics.google.com/analytics/web/#/p${propertyId}/reports/intelligenthome`
+      : 'https://analytics.google.com/';
+    window.open(url, '_blank');
+  });
 
   $('saveConfig').addEventListener('click', () => {
     const cfg = {
